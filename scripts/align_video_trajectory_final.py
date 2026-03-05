@@ -22,6 +22,19 @@ import pytesseract
 from PIL import Image
 
 
+# 要删除的无意义列
+COLUMNS_TO_REMOVE = [
+    '上点时间',
+    '补点',
+    'unitid',
+    'GPS标记',
+    '播种播肥 / 油耗 / 压力',
+    '播种播肥/油耗/压力',  # 可能的不同格式
+    '抛肥量(立方)',
+    '定位间隔'
+]
+
+
 class VideoTrajectoryAligner:
     """视频与轨迹数据对齐工具（最终版）"""
 
@@ -56,6 +69,16 @@ class VideoTrajectoryAligner:
 
         self.trajectory_df = pd.read_excel(trajectory_path)
         self.trajectory_df['定位时间'] = pd.to_datetime(self.trajectory_df['定位时间'])
+
+        # 过滤无意义列
+        cols_before = len(self.trajectory_df.columns)
+        self.trajectory_df = self.trajectory_df.drop(
+            columns=[col for col in COLUMNS_TO_REMOVE if col in self.trajectory_df.columns]
+        )
+        cols_after = len(self.trajectory_df.columns)
+
+        if self.verbose and cols_before != cols_after:
+            print(f"✓ 过滤了 {cols_before - cols_after} 个无意义列")
 
         # 创建时间索引（使用正确的时间戳转换方式）
         self.trajectory_df['时间戳'] = self.trajectory_df['定位时间'].apply(lambda x: int(pd.Timestamp(x).timestamp()))
