@@ -1,0 +1,213 @@
+<mxGraphModel dx="1800" dy="950" grid="1" gridSize="8" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1800" pageHeight="950" background="#FFFFFF">
+  <root>
+    <mxCell id="0"/>
+    <mxCell id="1" parent="0"/>
+
+    <!-- Module: Multimodal MBT -->
+    <mxCell id="mm_module" value="Multimodal MBT (371K params)" style="swimlane;fillColor=#F8FAFC;strokeColor=#E2E8F0;strokeWidth=1;startSize=30;fontSize=14;fontStyle=1;fontColor=#1E293B;rounded=0;" vertex="1" parent="1">
+      <mxGeometry x="40" y="40" width="480" height="880" as="geometry"/>
+    </mxCell>
+
+    <!-- Multimodal: Trajectory Branch -->
+    <mxCell id="mm_traj_input" value="Trajectory Input&#xa;(6D features)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E0F2FE;strokeColor=#0284C7;strokeWidth=1.5;fontColor=#1E293B;fontSize=11;fontFamily=Times New Roman;" vertex="1" parent="mm_module">
+      <mxGeometry x="40" y="50" width="100" height="50" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="mm_traj_proj" value="Linear Projection&#xa;(6 → 768)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DBEAFE;strokeColor=#2563EB;strokeWidth=1.5;fontColor=#1E293B;fontSize=11;fontFamily=Times New Roman;" vertex="1" parent="mm_module">
+      <mxGeometry x="40" y="130" width="100" height="50" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="mm_traj_token" value="Token Construction&#xa;[CLS + Traj] (2×768)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DBEAFE;strokeColor=#2563EB;strokeWidth=1.5;fontColor=#1E293B;fontSize=11;fontFamily=Times New Roman;" vertex="1" parent="mm_module">
+      <mxGeometry x="20" y="210" width="140" height="50" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="mm_traj_pos" value="+ Position Embed" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DBEAFE;strokeColor=#2563EB;strokeWidth=1.5;fontColor=#1E293B;fontSize=11;fontFamily=Times New Roman;" vertex="1" parent="mm_module">
+      <mxGeometry x="40" y="290" width="100" height="40" as="geometry"/>
+    </mxCell>
+
+    <!-- Multimodal: Image Branch -->
+    <mxCell id="mm_img_input" value="Image Input&#xa;(8 frames × 3×224×224)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E0F2FE;strokeColor=#0284C7;strokeWidth=1.5;fontColor=#1E293B;fontSize=11;fontFamily=Times New Roman;" vertex="1" parent="mm_module">
+      <mxGeometry x="260" y="50" width="160" height="50" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="mm_img_patch" value="ViT Patch Embed&#xa;(16×16 patches)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DBEAFE;strokeColor=#2563EB;strokeWidth=1.5;fontColor=#1E293B;fontSize=11;fontFamily=Times New Roman;" vertex="1" parent="mm_module">
+      <mxGeometry x="260" y="130" width="160" height="50" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="mm_img_token" value="Token Construction&#xa;[CLS + 1568 patches] (1569×768)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DBEAFE;strokeColor=#2563EB;strokeWidth=1.5;fontColor=#1E293B;fontSize=11;fontFamily=Times New Roman;" vertex="1" parent="mm_module">
+      <mxGeometry x="220" y="210" width="240" height="50" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="mm_img_pos" value="+ Interpolated Pos Embed" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DBEAFE;strokeColor=#2563EB;strokeWidth=1.5;fontColor=#1E293B;fontSize=11;fontFamily=Times New Roman;" vertex="1" parent="mm_module">
+      <mxGeometry x="260" y="290" width="160" height="40" as="geometry"/>
+    </mxCell>
+
+    <!-- Multimodal: Fusion -->
+    <mxCell id="mm_mbt" value="12× AdaptFormer Blocks&#xa;• Self-Attention (Traj)&#xa;• Self-Attention (Img)&#xa;• Cross-Modal Attention (4 latent tokens)&#xa;• Adapter Layers (dim=8)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FEF3C7;strokeColor=#D97706;strokeWidth=2;fontColor=#1E293B;fontSize=12;fontFamily=Times New Roman;fontStyle=1;align=center;" vertex="1" parent="mm_module">
+      <mxGeometry x="100" y="380" width="280" height="140" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="mm_cls" value="Extract CLS Tokens&#xa;&amp; Element-wise Mean" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DBEAFE;strokeColor=#2563EB;strokeWidth=1.5;fontColor=#1E293B;fontSize=11;fontFamily=Times New Roman;" vertex="1" parent="mm_module">
+      <mxGeometry x="140" y="560" width="200" height="50" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="mm_fc" value="Linear Classifier&#xa;(768 → 11)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DBEAFE;strokeColor=#2563EB;strokeWidth=1.5;fontColor=#1E293B;fontSize=11;fontFamily=Times New Roman;" vertex="1" parent="mm_module">
+      <mxGeometry x="180" y="650" width="120" height="50" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="mm_output" value="Output&#xa;(11 classes)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#D1FAE5;strokeColor=#059669;strokeWidth=1.5;fontColor=#1E293B;fontSize=11;fontFamily=Times New Roman;" vertex="1" parent="mm_module">
+      <mxGeometry x="180" y="740" width="120" height="50" as="geometry"/>
+    </mxCell>
+
+    <!-- Module: Image Only -->
+    <mxCell id="img_module" value="Image Only (16K params)" style="swimlane;fillColor=#F8FAFC;strokeColor=#E2E8F0;strokeWidth=1;startSize=30;fontSize=14;fontStyle=1;fontColor=#1E293B;rounded=0;" vertex="1" parent="1">
+      <mxGeometry x="600" y="40" width="280" height="880" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="img_input" value="Image Input&#xa;(8 frames × 3×224×224)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E0F2FE;strokeColor=#0284C7;strokeWidth=1.5;fontColor=#1E293B;fontSize=11;fontFamily=Times New Roman;" vertex="1" parent="img_module">
+      <mxGeometry x="60" y="50" width="160" height="50" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="img_patch" value="ViT Patch Embed&#xa;(16×16 patches)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DBEAFE;strokeColor=#2563EB;strokeWidth=1.5;fontColor=#1E293B;fontSize=11;fontFamily=Times New Roman;" vertex="1" parent="img_module">
+      <mxGeometry x="60" y="130" width="160" height="50" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="img_blocks" value="12× Transformer Blocks&#xa;(Frozen ViT-B/16)&#xa;768-dim, 12 heads" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E0F2FE;strokeColor=#0284C7;strokeWidth=1.5;fontColor=#1E293B;fontSize=11;fontFamily=Times New Roman;" vertex="1" parent="img_module">
+      <mxGeometry x="40" y="210" width="200" height="80" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="img_norm" value="Layer Norm" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DBEAFE;strokeColor=#2563EB;strokeWidth=1.5;fontColor=#1E293B;fontSize=11;fontFamily=Times New Roman;" vertex="1" parent="img_module">
+      <mxGeometry x="80" y="320" width="120" height="40" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="img_fc" value="Linear Classifier&#xa;(768 → 11)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DBEAFE;strokeColor=#2563EB;strokeWidth=1.5;fontColor=#1E293B;fontSize=11;fontFamily=Times New Roman;" vertex="1" parent="img_module">
+      <mxGeometry x="80" y="390" width="120" height="50" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="img_avg" value="Frame Averaging&#xa;(mean over 8 frames)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DBEAFE;strokeColor=#2563EB;strokeWidth=1.5;fontColor=#1E293B;fontSize=11;fontFamily=Times New Roman;" vertex="1" parent="img_module">
+      <mxGeometry x="50" y="470" width="180" height="50" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="img_output" value="Output&#xa;(11 classes)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#D1FAE5;strokeColor=#059669;strokeWidth=1.5;fontColor=#1E293B;fontSize=11;fontFamily=Times New Roman;" vertex="1" parent="img_module">
+      <mxGeometry x="80" y="560" width="120" height="50" as="geometry"/>
+    </mxCell>
+
+    <!-- Module: Trajectory Only -->
+    <mxCell id="traj_module" value="Trajectory Only (536K params)" style="swimlane;fillColor=#F8FAFC;strokeColor=#E2E8F0;strokeWidth=1;startSize=30;fontSize=14;fontStyle=1;fontColor=#1E293B;rounded=0;" vertex="1" parent="1">
+      <mxGeometry x="940" y="40" width="280" height="880" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="traj_input" value="Trajectory Input&#xa;(6D features)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E0F2FE;strokeColor=#0284C7;strokeWidth=1.5;fontColor=#1E293B;fontSize=11;fontFamily=Times New Roman;" vertex="1" parent="traj_module">
+      <mxGeometry x="90" y="50" width="100" height="50" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="traj_proj" value="Linear Projection&#xa;(6 → 768)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DBEAFE;strokeColor=#2563EB;strokeWidth=1.5;fontColor=#1E293B;fontSize=11;fontFamily=Times New Roman;" vertex="1" parent="traj_module">
+      <mxGeometry x="90" y="130" width="100" height="50" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="traj_token" value="Token Construction&#xa;[CLS + Traj] (2×768)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DBEAFE;strokeColor=#2563EB;strokeWidth=1.5;fontColor=#1E293B;fontSize=11;fontFamily=Times New Roman;" vertex="1" parent="traj_module">
+      <mxGeometry x="70" y="210" width="140" height="50" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="traj_pos" value="+ Position Embed" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DBEAFE;strokeColor=#2563EB;strokeWidth=1.5;fontColor=#1E293B;fontSize=11;fontFamily=Times New Roman;" vertex="1" parent="traj_module">
+      <mxGeometry x="90" y="290" width="100" height="40" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="traj_cls" value="Extract CLS Token" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DBEAFE;strokeColor=#2563EB;strokeWidth=1.5;fontColor=#1E293B;fontSize=11;fontFamily=Times New Roman;" vertex="1" parent="traj_module">
+      <mxGeometry x="80" y="360" width="120" height="40" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="traj_mlp" value="MLP Encoder&#xa;768 → 512 (ReLU+Dropout)&#xa;512 → 256 (ReLU+Dropout)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DBEAFE;strokeColor=#2563EB;strokeWidth=1.5;fontColor=#1E293B;fontSize=11;fontFamily=Times New Roman;" vertex="1" parent="traj_module">
+      <mxGeometry x="40" y="430" width="200" height="80" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="traj_fc" value="Linear Classifier&#xa;(256 → 11)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DBEAFE;strokeColor=#2563EB;strokeWidth=1.5;fontColor=#1E293B;fontSize=11;fontFamily=Times New Roman;" vertex="1" parent="traj_module">
+      <mxGeometry x="80" y="540" width="120" height="50" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="traj_output" value="Output&#xa;(11 classes)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#D1FAE5;strokeColor=#059669;strokeWidth=1.5;fontColor=#1E293B;fontSize=11;fontFamily=Times New Roman;" vertex="1" parent="traj_module">
+      <mxGeometry x="80" y="630" width="120" height="50" as="geometry"/>
+    </mxCell>
+
+    <!-- Edges: Multimodal -->
+    <mxCell id="e1" edge="1" parent="1" source="mm_traj_input" target="mm_traj_proj" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1E293B;strokeWidth=2;endArrow=block;endFill=1;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e2" edge="1" parent="1" source="mm_traj_proj" target="mm_traj_token" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1E293B;strokeWidth=2;endArrow=block;endFill=1;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e3" edge="1" parent="1" source="mm_traj_token" target="mm_traj_pos" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1E293B;strokeWidth=2;endArrow=block;endFill=1;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e4" edge="1" parent="1" source="mm_traj_pos" target="mm_mbt" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1E293B;strokeWidth=2;endArrow=block;endFill=1;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="e5" edge="1" parent="1" source="mm_img_input" target="mm_img_patch" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1E293B;strokeWidth=2;endArrow=block;endFill=1;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e6" edge="1" parent="1" source="mm_img_patch" target="mm_img_token" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1E293B;strokeWidth=2;endArrow=block;endFill=1;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e7" edge="1" parent="1" source="mm_img_token" target="mm_img_pos" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1E293B;strokeWidth=2;endArrow=block;endFill=1;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e8" edge="1" parent="1" source="mm_img_pos" target="mm_mbt" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1E293B;strokeWidth=2;endArrow=block;endFill=1;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="e9" edge="1" parent="1" source="mm_mbt" target="mm_cls" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1E293B;strokeWidth=2;endArrow=block;endFill=1;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e10" edge="1" parent="1" source="mm_cls" target="mm_fc" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1E293B;strokeWidth=2;endArrow=block;endFill=1;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e11" edge="1" parent="1" source="mm_fc" target="mm_output" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1E293B;strokeWidth=2;endArrow=block;endFill=1;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- Edges: Image Only -->
+    <mxCell id="e12" edge="1" parent="1" source="img_input" target="img_patch" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1E293B;strokeWidth=2;endArrow=block;endFill=1;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e13" edge="1" parent="1" source="img_patch" target="img_blocks" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1E293B;strokeWidth=2;endArrow=block;endFill=1;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e14" edge="1" parent="1" source="img_blocks" target="img_norm" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1E293B;strokeWidth=2;endArrow=block;endFill=1;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e15" edge="1" parent="1" source="img_norm" target="img_fc" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1E293B;strokeWidth=2;endArrow=block;endFill=1;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e16" edge="1" parent="1" source="img_fc" target="img_avg" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1E293B;strokeWidth=2;endArrow=block;endFill=1;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e17" edge="1" parent="1" source="img_avg" target="img_output" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1E293B;strokeWidth=2;endArrow=block;endFill=1;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- Edges: Trajectory Only -->
+    <mxCell id="e18" edge="1" parent="1" source="traj_input" target="traj_proj" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1E293B;strokeWidth=2;endArrow=block;endFill=1;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e19" edge="1" parent="1" source="traj_proj" target="traj_token" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1E293B;strokeWidth=2;endArrow=block;endFill=1;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e20" edge="1" parent="1" source="traj_token" target="traj_pos" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1E293B;strokeWidth=2;endArrow=block;endFill=1;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e21" edge="1" parent="1" source="traj_pos" target="traj_cls" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1E293B;strokeWidth=2;endArrow=block;endFill=1;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e22" edge="1" parent="1" source="traj_cls" target="traj_mlp" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1E293B;strokeWidth=2;endArrow=block;endFill=1;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e23" edge="1" parent="1" source="traj_mlp" target="traj_fc" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1E293B;strokeWidth=2;endArrow=block;endFill=1;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e24" edge="1" parent="1" source="traj_fc" target="traj_output" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1E293B;strokeWidth=2;endArrow=block;endFill=1;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+  </root>
+</mxGraphModel>
