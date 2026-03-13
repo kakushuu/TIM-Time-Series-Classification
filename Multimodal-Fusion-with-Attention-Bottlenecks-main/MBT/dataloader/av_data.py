@@ -6,87 +6,73 @@ import numpy as np
 import torch
 from torch.utils.data import Dataset
 import torchvision.transforms as Tv
-import torchaudio.transforms as Ta
-import torchaudio
+
+# 6 trajectory feature columns (excluding '类型')
+TRAJ_COLS = ['经度', '纬度', '间距(米)', '深度', '速度', '方向角']
+TRAJ_SEQ  = 8   # sliding-window length in frames
+
 
 class AV_Dataset(Dataset):
-    def __init__(self, annotations_file, audio_dir, img_dir, spec_mean, spec_std, num_images_per_clip=8):
+    def __init__(self, df, data_dir='', traj_mean=None, traj_std=None, seq_len=TRAJ_SEQ):
+        """
+        Args:
+            df:        DataFrame with columns [frame_path, 经度, 纬度, 间距(米), 深度, 速度, 方向角, 分类]
+            data_dir:  Base directory prepended to frame_path (leave '' if paths are already absolute)
+            traj_mean: Pre-computed mean for trajectory normalisation (numpy array, shape (6,))
+            traj_std:  Pre-computed std  for trajectory normalisation (numpy array, shape (6,))
+            seq_len:   Sliding-window length T; each sample returns T consecutive trajectory frames
+        """
         super(AV_Dataset, self).__init__()
 
-        self.annos = pd.read_csv(annotations_file, header=None)  # columns as [file_name, label]
-        self.audio_dir = audio_dir  # all files in '.wav' format
-        self.img_dir = img_dir # all '.jpg' images
-        self.num_images_per_clip = num_images_per_clip
+        self.df       = df.reset_index(drop=True)
+        self.data_dir = data_dir
+        self.seq_len  = seq_len
 
         self.visual_transforms = Tv.Compose([
-            # input image (224x224) by default
+            Tv.Resize((224, 224)),
             Tv.ToTensor(),
             Tv.ConvertImageDtype(torch.float32),
-            # normalize to imagenet mean and std values
             Tv.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
         ])
 
-        self.sampling_frequency = 16000
-        self.mel = Ta.MelSpectrogram(
-                      sample_rate=16000,
-                      n_fft=400,
-                      win_length=400,
-                      hop_length=160,
-                      n_mels=128,
-                  )
-                  
-        self.a2d = Ta.AmplitudeToDB()
-        # mean and std already calculated.
-        self.spec_mean = spec_mean
-        self.spec_std = spec_std
+        # Trajectory normalisation stats
+        if traj_mean is None:
+            traj = self.df[TRAJ_COLS].values.astype(np.float32)
+            traj_mean = traj.mean(axis=0)
+            traj_std  = traj.std(axis=0) + 1e-6
+        self.traj_mean = torch.tensor(traj_mean, dtype=torch.float32)
+        self.traj_std  = torch.tensor(traj_std,  dtype=torch.float32)
+
+        # Pre-load all trajectory features as a tensor for fast window slicing
+        traj_vals = self.df[TRAJ_COLS].values.astype(np.float32)          # (N, 6)
+        traj_vals = torch.tensor(traj_vals)                                # (N, 6)
+        self.traj_all = (traj_vals - self.traj_mean) / self.traj_std       # normalised
 
     def __len__(self):
-        return len(self.annos)
+        return len(self.df)
 
     def __getitem__(self, idx):
+        row = self.df.iloc[idx]
 
-        # select one clip
-        clip_name = self.annos.iloc[idx, 0]
+        # ── Image (current frame only) ──────────────────────────────────────
+        frame_path = os.path.join(self.data_dir, row['frame_path']) if self.data_dir else row['frame_path']
+        img = Image.open(frame_path).convert('RGB')
+        img = self.visual_transforms(img)   # (3, 224, 224)
+        rgb_frames = img.unsqueeze(0)        # (1, 3, 224, 224)
 
-        # load the audio file with torch audio
-        audio_path = os.path.join(self.audio_dir, clip_name + '.wav')
-        waveform, sample_rate = torchaudio.load(audio_path, normalize=True)
-        # use mono audio instead os stereo audio (use left by default)
-        waveform = waveform[0]
+        # ── Trajectory sequence: sliding window [idx-T+1 … idx] ─────────────
+        # If idx < T-1 we repeat the earliest available frame (left-padding).
+        start = max(0, idx - self.seq_len + 1)
+        traj_seq = self.traj_all[start : idx + 1]           # (<=T, 6)
 
-        # resample
-        if sample_rate != self.sampling_frequency:
-            waveform = torchaudio.functional.resample(waveform, sample_rate, self.sampling_frequency)
+        if traj_seq.shape[0] < self.seq_len:
+            # Pad on the left by repeating the first row
+            pad = traj_seq[0:1].expand(self.seq_len - traj_seq.shape[0], -1)
+            traj_seq = torch.cat([pad, traj_seq], dim=0)    # (T, 6)
 
-        # normalize raw waveform
-        waveform = (waveform - torch.mean(waveform)) / (torch.std(waveform) + 1e-6)
-        # generate mel spectrogram and convert amplitude to decibels
-        spectrogram = self.a2d(self.mel(waveform))
-        # normalize spectrogram.
-        spectrogram = (spectrogram - self.spec_mean) / self.spec_std
-        spectrogram = spectrogram.type(torch.float32)
+        # traj_seq: (T, 6)
 
-        # load images
-        file_path = self.img_dir + clip_name + '/'
-        frame_names = [i for i in os.listdir(file_path)]
+        # ── Label ────────────────────────────────────────────────────────────
+        label = int(row['分类'])
 
-        # resampling indices
-        target_frame_idx = np.linspace(0, len(frame_names)-1 , num=self.num_images_per_clip, dtype=int)
-
-        rgb_frames = []
-        for i in target_frame_idx:
-            img = np.asarray(Image.open(file_path + frame_names[i])) / 255.0
-            rgb_frames.append(self.visual_transforms(img))
-
-        rgb_frames = torch.stack(rgb_frames, 0).type(torch.float32)
-
-        # assign integer to labels
-        label = int(self.annos.iloc[idx, 1])
-        
-        return spectrogram, rgb_frames, label
-
-# test = AV_Dataset('train.csv','audio_files','rgb_frames/')
-# test_loader = DataLoader(test,batch_size=32,shuffle=True, collate_fn=collate_fn)
-# for spec,frame,label in test_loader:
-#     print(spec.shape, frame.shape, label.shape)
-    # break    
+        return traj_seq, rgb_frames, label
