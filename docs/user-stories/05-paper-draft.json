@@ -1,0 +1,18 @@
+[
+  {
+    "description": "论文草稿 LaTeX 文档 (Story 5: Subagent_Doc)",
+    "steps": [
+      "文件 paper/tc_adaptformer_draft.tex 存在",
+      "LaTeX 文档可编译: pdflatex -interaction=nonstopmode paper/tc_adaptformer_draft.tex 无致命错误",
+      "包含摘要部分: 强调1Hz对齐的GNSS-视频融合和参数效率",
+      "包含方法部分: TC-AdaptFormer架构，含数学公式 $Q_{gnss} = \\text{MLP}(G)$",
+      "包含融合机制公式: $F = \\text{Attn}(Q_{gnss}, K_{visual}, V_{visual})$",
+      "包含实验设置: 6272样本, 11类, 1Hz采样率, 70/15/15分割",
+      "包含基线对比表格: Video-only/GNSS-only/Late Fusion/TC-AdaptFormer",
+      "包含消融实验表格: w/o GNSS交叉注意力 / w/o AdaptFormer",
+      "包含参考文献 references.bib 文件且引用超过20篇",
+      "PDF 正文部分(不含参考文献)不少于6页"
+    ],
+    "passes": true
+  }
+]

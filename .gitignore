@@ -6,6 +6,72 @@ data/
 image/
 
 # IDE
-.claude/
 .vscode/
 .idea/
+
+# Claude Code - allow skills but ignore other config
+.claude/*
+!.claude/skills/
+.claude/skills/*
+!.claude/skills/*/
+.claude/skills/*/
+!.claude/skills/*/SKILL.md
+!.claude/skills/README.md
+.agents/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Jupyter Notebooks
+.ipynb_checkpoints
+
+# PyTorch checkpoints and models
+*.pth
+*.pt
+*.ckpt
+experiments/checkpoints/
+experiments/metrics_test/
+
+# Archives
+*.zip
+*.tar.gz
+*.rar
+
+# Logs
+*.log
+
+# Node modules
+node_modules/
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Project-specific temporary directories
+*_tmp_*
+.agents/

@@ -1,0 +1,2992 @@
+[
+    [
+        {
+            "type": "header",
+            "bbox": [
+                0.331,
+                0.043,
+                0.666,
+                0.056
+            ],
+            "angle": 0,
+            "content": "Computers and Electronics in Agriculture 216 (2024) 108457"
+        },
+        {
+            "type": "header",
+            "bbox": [
+                0.062,
+                0.073,
+                0.162,
+                0.145
+            ],
+            "angle": 0,
+            "content": ""
+        },
+        {
+            "type": "header",
+            "bbox": [
+                0.062,
+                0.147,
+                0.162,
+                0.162
+            ],
+            "angle": 0,
+            "content": "ELSEVIER"
+        },
+        {
+            "type": "header",
+            "bbox": [
+                0.379,
+                0.076,
+                0.623,
+                0.089
+            ],
+            "angle": 0,
+            "content": "Contents lists available at ScienceDirect"
+        },
+        {
+            "type": "header",
+            "bbox": [
+                0.288,
+                0.107,
+                0.712,
+                0.128
+            ],
+            "angle": 0,
+            "content": "Computers and Electronics in Agriculture"
+        },
+        {
+            "type": "header",
+            "bbox": [
+                0.328,
+                0.146,
+                0.672,
+                0.16
+            ],
+            "angle": 0,
+            "content": "journal homepage: www.elsevier.com/locate/compag"
+        },
+        {
+            "type": "header",
+            "bbox": [
+                0.833,
+                0.068,
+                0.939,
+                0.162
+            ],
+            "angle": 0,
+            "content": "Computer and electronics in agriculture"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.059,
+                0.184,
+                0.174,
+                0.199
+            ],
+            "angle": 0,
+            "content": "Original papers"
+        },
+        {
+            "type": "title",
+            "bbox": [
+                0.058,
+                0.207,
+                0.761,
+                0.249
+            ],
+            "angle": 0,
+            "content": "GAN-BiLSTM network for field-road classification on imbalanced GNSS recordings"
+        },
+        {
+            "type": "image",
+            "bbox": [
+                0.839,
+                0.186,
+                0.891,
+                0.224
+            ],
+            "angle": 0,
+            "content": null
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.058,
+                0.254,
+                0.808,
+                0.286
+            ],
+            "angle": 0,
+            "content": "Weixin Zhai<sup>1</sup>, Guozhao Mo<sup>1</sup>, Yuzhen Xiao<sup>1</sup>, Xiya Xiong, Caicong Wu, Xiaojiang Zhang, Zhi Xu, Jiawen Pan*"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.058,
+                0.291,
+                0.543,
+                0.302
+            ],
+            "angle": 0,
+            "content": "College of Information and Electrical Engineering, China Agricultural University, Beijing 100083, China"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.058,
+                0.302,
+                0.742,
+                0.314
+            ],
+            "angle": 0,
+            "content": "Key Laboratory of Agricultural Machinery Monitoring and Big Data Application, Ministry of Agriculture and Rural Affairs, Beijing 100083, China"
+        },
+        {
+            "type": "title",
+            "bbox": [
+                0.059,
+                0.335,
+                0.223,
+                0.348
+            ],
+            "angle": 0,
+            "content": "ARTICLE INFO"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.059,
+                0.362,
+                0.11,
+                0.372
+            ],
+            "angle": 0,
+            "content": "Keywords:"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.06,
+                0.373,
+                0.225,
+                0.383
+            ],
+            "angle": 0,
+            "content": "Field-road trajectory classification"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.06,
+                0.384,
+                0.204,
+                0.394
+            ],
+            "angle": 0,
+            "content": "Operation mode classification"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.06,
+                0.395,
+                0.13,
+                0.405
+            ],
+            "angle": 0,
+            "content": "Deep learning"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.06,
+                0.406,
+                0.212,
+                0.415
+            ],
+            "angle": 0,
+            "content": "Generative adversarial network"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.06,
+                0.416,
+                0.165,
+                0.425
+            ],
+            "angle": 0,
+            "content": "Attention mechanism"
+        },
+        {
+            "type": "title",
+            "bbox": [
+                0.336,
+                0.335,
+                0.451,
+                0.348
+            ],
+            "angle": 0,
+            "content": "ABSTRACT"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.334,
+                0.36,
+                0.937,
+                0.53
+            ],
+            "angle": 0,
+            "content": "Field-road classification is a key task in processing spatio-temporal trajectories in the agricultural field. This task involves classifying agricultural machinery trajectories into field operation and road driving trajectories. Accurately classifying these trajectories is essential for precision agriculture. However, the existing methods for field-road classification do not address the issue of data imbalance between the numbers of field and road points in trajectories. To improve the accuracy of field-road classification and solve the data imbalance problem in agricultural machinery trajectories, a generative adversarial network-bidirectional long short-term memory network (GAN-BiLSTM) field-road classification model is proposed in this paper. First, we use a GAN for data augmentation to obtain a balanced dataset. Second, we propose a BiLSTM with attention mechanism (Att-BiLSTM) to capture data features. Finally, we train the model using focal loss to further learn points that are difficult to classify for field-road classification. To evaluate the effectiveness of our proposed model, we conducted experiments and compared our results with those of the current field-road classification methods on 160 agricultural trajectory samples. Our model achieved \\(92.3\\%\\) accuracy and a \\(92.1\\%\\) F1 score, exhibiting improvements of \\(5.9\\%\\) in accuracy and \\(6.4\\%\\) in F1 score compared with the current state-of-the-art method. The source code is publicly available at https://github.com/hysyyds/GAN-BiLSTM."
+        },
+        {
+            "type": "title",
+            "bbox": [
+                0.059,
+                0.556,
+                0.164,
+                0.568
+            ],
+            "angle": 0,
+            "content": "1. Introduction"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.058,
+                0.58,
+                0.486,
+                0.731
+            ],
+            "angle": 0,
+            "content": "Field-road classification is a crucial task in trajectory processing for precision agriculture. This task involves the classification of the movement trajectories of agricultural machinery by predicting their behaviors. Fig. 1 illustrates the process of converting trajectory points into field points and road points through classification. Agricultural machines with a global navigation satellite system (GNSS) can track their operational location in real time to form trajectories, providing convenience for remote control terminals in effectively monitoring and allocating tasks. Effective field-road classification based on operational trajectories is essential for analyzing the quantity, duration, mileage, area, and efficiency of agricultural machine operations (Wu et al., 2023)."
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.058,
+                0.731,
+                0.486,
+                0.807
+            ],
+            "angle": 0,
+            "content": "An efficient field-road classification model plays a crucial role in accurately estimating the area of agricultural fields (Song et al., 2017). This estimation is vital for tracking tillage progress (Song et al., 2022), predicting yield (Sujatha and Isakki, 2016), and determining subsidies for agricultural operations (Bereznicka and Wicki, 2021). Field-road classification technology enhances the identification of driving"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.509,
+                0.556,
+                0.938,
+                0.735
+            ],
+            "angle": 0,
+            "content": "scenarios for agricultural machinery. By accurately identifying these scenarios, the model assists in obtaining a comprehensive overview, enabling it to offer valuable recommendations regarding the mechanic's route and tasks. Furthermore, the technology aids in optimizing the configuration of facilities, ensuring a rational and efficient support system for the mechanic. As a result, it helps to minimize fuel consumption, reduce environmental impact, decrease the running time of agricultural machinery, and lower operating costs (Damanauskas et al., 2015; Yu et al., 2023). Additionally, field-road classification technology can extract the driving trajectories of agricultural machinery in diverse scenes. When combined with IoT technology, it enables precise task assignment and timely evaluation of machinery operations, optimizing overall efficiency (Fengzhao et al., 2018; Chen et al., 2020; Cao et al., 2022)."
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.509,
+                0.735,
+                0.938,
+                0.8
+            ],
+            "angle": 0,
+            "content": "Furthermore, accurate classification of agricultural machinery trajectories provides strong support for in-depth research on precision agriculture-related topics from the perspective of big data. For instance, field-road classification facilitates rural road network construction (Spononer, 2015), field operation efficiency assessment (Lacour"
+        },
+        {
+            "type": "page_footnote",
+            "bbox": [
+                0.07,
+                0.832,
+                0.21,
+                0.845
+            ],
+            "angle": 0,
+            "content": "* Corresponding author."
+        },
+        {
+            "type": "page_footnote",
+            "bbox": [
+                0.086,
+                0.845,
+                0.373,
+                0.857
+            ],
+            "angle": 0,
+            "content": "E-mail address: cau_panjiawen@cau.edu.cn (J. Pan)."
+        },
+        {
+            "type": "page_footnote",
+            "bbox": [
+                0.086,
+                0.857,
+                0.576,
+                0.868
+            ],
+            "angle": 0,
+            "content": "These authors contributed equally to this work and should be considered co-first authors."
+        },
+        {
+            "type": "list",
+            "bbox": [
+                0.07,
+                0.832,
+                0.576,
+                0.868
+            ],
+            "angle": 0,
+            "content": null
+        },
+        {
+            "type": "footer",
+            "bbox": [
+                0.058,
+                0.878,
+                0.323,
+                0.89
+            ],
+            "angle": 0,
+            "content": "https://doi.org/10.1016/j.compag.2023.108457"
+        },
+        {
+            "type": "footer",
+            "bbox": [
+                0.06,
+                0.891,
+                0.617,
+                0.902
+            ],
+            "angle": 0,
+            "content": "Received 12 March 2023; Received in revised form 14 November 2023; Accepted 19 November 2023"
+        },
+        {
+            "type": "footer",
+            "bbox": [
+                0.06,
+                0.903,
+                0.258,
+                0.913
+            ],
+            "angle": 0,
+            "content": "Available online 28 November 2023"
+        },
+        {
+            "type": "footer",
+            "bbox": [
+                0.06,
+                0.913,
+                0.345,
+                0.924
+            ],
+            "angle": 0,
+            "content": "0168-1699/© 2023 Elsevier B.V. All rights reserved."
+        }
+    ],
+    [
+        {
+            "type": "header",
+            "bbox": [
+                0.061,
+                0.043,
+                0.13,
+                0.053
+            ],
+            "angle": 0,
+            "content": "W. Zhai et al."
+        },
+        {
+            "type": "header",
+            "bbox": [
+                0.657,
+                0.043,
+                0.94,
+                0.054
+            ],
+            "angle": 0,
+            "content": "Computers and Electronics in Agriculture 216 (2024) 108457"
+        },
+        {
+            "type": "image",
+            "bbox": [
+                0.099,
+                0.067,
+                0.904,
+                0.269
+            ],
+            "angle": 0,
+            "content": null
+        },
+        {
+            "type": "image_caption",
+            "bbox": [
+                0.256,
+                0.277,
+                0.741,
+                0.289
+            ],
+            "angle": 0,
+            "content": "Fig. 1. Field-Road classification process — road points (Blue lines) and field points (Red zones)."
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.058,
+                0.304,
+                0.486,
+                0.344
+            ],
+            "angle": 0,
+            "content": "et al., 2014), the cross-area scheduling management of agricultural machinery (Liu et al., 2022), and agricultural machinery operation path planning (Bochtis et al., 2014)."
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.058,
+                0.344,
+                0.486,
+                0.501
+            ],
+            "angle": 0,
+            "content": "Agricultural machinery has field operation mode and road driving mode. Field-road classification assigns corresponding labels to trajectories based on their motion characteristics. A practical approach to field-road classification involves employing high-precision GNSS modules in conjunction with sufficiently accurate field and road maps. These GNSS modules are capable of receiving real-time kinematic (RTK) or differential GNSS (DGNSS) corrections, effectively mitigating various sources of positioning errors and providing coordinates with sub-centimeter (RTK) or sub-decimeter (DGNSS) accuracy. Such precise trajectory data can be overlaid onto a map with distinct road and field layers, facilitating real-time classification of trajectory points as either road or field."
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.058,
+                0.502,
+                0.486,
+                0.633
+            ],
+            "angle": 0,
+            "content": "However, there are certain challenges associated with this approach. GNSS receivers of this caliber, ranging in cost from a few hundred to several thousand dollars, remain susceptible to residual errors such as multipath interference and signal obstruction or degradation, especially in environments with obstructions such as tree canopies. Furthermore, achieving field-road maps at the requisite level of accuracy may not be universally accessible. The method proposed in this research represents a potential solution for addressing situations where positioning errors exceed acceptable thresholds or where map accuracy falls short of requirements."
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.058,
+                0.633,
+                0.486,
+                0.752
+            ],
+            "angle": 0,
+            "content": "Additionally, the ability to utilize low-cost consumer-grade GNSS modules offers the opportunity to equip and utilize existing nonmodern machinery with affordable modules, enabling data collection, analysis, and performance enhancement for agricultural operations on a smaller scale. The approach outlined in this manuscript, along with similar strategies, can also be implemented as a server-based service on operators' smartphones, which are already equipped with low-cost GNSS modules, providing a performance enhancement system for agricultural operations."
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.058,
+                0.752,
+                0.489,
+                0.937
+            ],
+            "angle": 0,
+            "content": "Recently, there have also been studies leveraging machine learning techniques to address field-road classification. Chen et al. (2021) applied a density-based clustering algorithm to classify trajectories and proposed an inference algorithm using the characteristic that trajectory directions are distributed differently in fields and roads. However, this approach is unsupervised and strongly depends on the model's hyperparameters. Poteko et al. (2021) used another approach based on decision trees (Kotsiantis, 2013), obtaining favorable classification results on two training datasets. However, this approach only considers the motion information of the agricultural machine and does not use the spatial information of the agricultural machine. Chen et al. (2022) used a graph convolutional neural network (Yu et al., 2017) to build up the spatio-temporal relationship map of trajectory points, capture the trajectory point features using a convolutional operator, and finally"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.509,
+                0.304,
+                0.938,
+                0.344
+            ],
+            "angle": 0,
+            "content": "output the classification results using a linear classifier, achieving favorable results. However, the spatio-temporal graph in this method is complicated and time-consuming."
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.509,
+                0.344,
+                0.939,
+                0.463
+            ],
+            "angle": 0,
+            "content": "Meanwhile, the field-road classification task faces other problems, such as data imbalance and inadequate feature extraction, in addition to the problems solved by the above methods. The above methods do not fully extract the trajectory features of agricultural machinery and ignore the correlation information between trajectory points in adjacent periods. Thabtah et al. (2020) pointed out that the relationship between data imbalance rate and accuracy is convex, indicating that solving the data imbalance problem can improve the field-road classification accuracy."
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.509,
+                0.464,
+                0.939,
+                0.875
+            ],
+            "angle": 0,
+            "content": "To enhance the accuracy of field-road classification in agricultural machinery trajectories, this study proposes a field-road classification model called generative adversarial network-bidirectional long short-term memory network (GAN-BiLSTM). Considering the idea of combining GAN (Goodfellow et al., 2020) with semi-supervised learning (Salimans et al., 2016), we use GAN to address the data imbalance problem. Specifically, our approach uses a modified GAN model called Conditional Tabular GAN (Xu et al., 2019, CTGAN) because it can generate \"fake\" road trajectory points through conditional control. By adding these generated road points to the original data, we reduce the imbalance rate and improve the classification accuracy. In recent years, deep learning has been applied to sequence data classification with excellent results (Graves et al., 2006), and field-road classification is also a sequence classification task. Hochreiter and Schmidhuber (1997) proposed the LSTM, which can capture the contextual information of sequences and solve the gradient vanishing and gradient explosion problems of recurrent neural network (Yu et al., 2019) well. Before using neural networks, our method uses a time window feature extraction method to improve the accuracy of field-road classification. The time window feature extraction method can extract spatio-temporal features, such as the median and standard deviation of the trajectory attributes. We input the extracted features and some trajectory attributes into a BiLSTM with attention mechanism (Att-BiLSTM). The proposed network improves the field-road classification accuracy by incorporating an attention mechanism (Vaswani et al., 2017) in the BiLSTM (Graves and Schmidhuber, 2005). The incorporation allows the network to capture the spatio-temporal relationships between adjacent trajectory points through the BiLSTM and automatically focus on the relevant key trajectory points through the attention mechanism. Finally, focal loss (Lin et al., 2020) is used as the loss function for model training to distinguish field and road points better."
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.53,
+                0.875,
+                0.924,
+                0.888
+            ],
+            "angle": 0,
+            "content": "The main contributions of this paper are summarized as follows:"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.532,
+                0.896,
+                0.938,
+                0.934
+            ],
+            "angle": 0,
+            "content": "- We point out the data imbalance problem in field-road classification based on trajectories and solve it by generating adversarial networks."
+        },
+        {
+            "type": "page_number",
+            "bbox": [
+                0.495,
+                0.952,
+                0.505,
+                0.961
+            ],
+            "angle": 0,
+            "content": "2"
+        }
+    ],
+    [
+        {
+            "type": "header",
+            "bbox": [
+                0.061,
+                0.043,
+                0.13,
+                0.053
+            ],
+            "angle": 0,
+            "content": "W. Zhai et al."
+        },
+        {
+            "type": "header",
+            "bbox": [
+                0.657,
+                0.043,
+                0.94,
+                0.055
+            ],
+            "angle": 0,
+            "content": "Computers and Electronics in Agriculture 216 (2024) 108457"
+        },
+        {
+            "type": "image",
+            "bbox": [
+                0.068,
+                0.066,
+                0.481,
+                0.282
+            ],
+            "angle": 0,
+            "content": null
+        },
+        {
+            "type": "image_caption",
+            "bbox": [
+                0.14,
+                0.292,
+                0.405,
+                0.304
+            ],
+            "angle": 0,
+            "content": "Fig. 2. Geospatial distribution of trajectory samples."
+        },
+        {
+            "type": "image",
+            "bbox": [
+                0.068,
+                0.318,
+                0.48,
+                0.487
+            ],
+            "angle": 0,
+            "content": null
+        },
+        {
+            "type": "image_caption",
+            "bbox": [
+                0.058,
+                0.498,
+                0.486,
+                0.521
+            ],
+            "angle": 0,
+            "content": "Fig. 3. Data imbalance: Majority of Samples exhibit an overrepresentation of field points over road points."
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.082,
+                0.55,
+                0.486,
+                0.603
+            ],
+            "angle": 0,
+            "content": "- We propose a new field-road classification method, that is, AttBiLSTM, to efficiently capture the spatio-temporal relationships in trajectories and automatically distinguish the importance of different trajectory points."
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.082,
+                0.603,
+                0.485,
+                0.629
+            ],
+            "angle": 0,
+            "content": "- We use a new loss function called focal loss for model training to distinguish complicated trajectories."
+        },
+        {
+            "type": "list",
+            "bbox": [
+                0.082,
+                0.55,
+                0.486,
+                0.629
+            ],
+            "angle": 0,
+            "content": null
+        },
+        {
+            "type": "title",
+            "bbox": [
+                0.059,
+                0.643,
+                0.232,
+                0.655
+            ],
+            "angle": 0,
+            "content": "2. Materials and methods"
+        },
+        {
+            "type": "title",
+            "bbox": [
+                0.059,
+                0.671,
+                0.137,
+                0.683
+            ],
+            "angle": 0,
+            "content": "2.1. Dataset"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.062,
+                0.697,
+                0.486,
+                0.935
+            ],
+            "angle": 0,
+            "content": "To establish the efficacy of our approach, we employed as the experimental dataset the agricultural machinery trajectory dataset obtained from various Chinese provinces in June 2021, which was provided by the Key Laboratory of Agricultural Machinery Monitoring and Big Data Application Ministry of Agriculture and Rural Affairs. The experimental dataset contains 160 trajectory samples, including 1,142,149 trajectory points. These trajectories were collected using agricultural equipment by BO CHUANG LIAN DONG Inc. The equipment utilized for this study comprised tractors equipped with low-accuracy GNSS receivers, with an approximate accuracy range of 2 to \\(5\\mathrm{m}\\), and a modest cost of around $40, as specified in the instrument data sheet. Additionally, the equipment was equipped with an integrated low-cost IMU (inertial measurement unit) for speed measurement purposes. The equipment produces a GNSS record at 5-s intervals. Fig. 2 shows the geographical distribution of the trajectory samples. Fig. 3 shows the quantity and proportion of points in each sample. Each trajectory point includes attributes, such as longitude, latitude, speed, direction, and time stamp. Trained annotators labeled all trajectory points in the training set as"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.509,
+                0.067,
+                0.938,
+                0.121
+            ],
+            "angle": 0,
+            "content": "either \"fields\" or \"roads\" on high-precision satellite maps, and these labeled points were subsequently employed for model training. Comparison experiments will be conducted using the complete dataset, and we will retrain all models using the optimal hyperparameters."
+        },
+        {
+            "type": "title",
+            "bbox": [
+                0.51,
+                0.133,
+                0.68,
+                0.146
+            ],
+            "angle": 0,
+            "content": "2.2. Design of GAN-BiLSTM"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.509,
+                0.16,
+                0.938,
+                0.306
+            ],
+            "angle": 0,
+            "content": "Due to the prolonged operation of agricultural machinery in fields compared with roads, the distribution of trajectory points is imbalanced, with a significantly greater number of points collected from the field than from the road at the same sampling interval. This imbalanced distribution of trajectory points can result in reduced model accuracy. Meanwhile, the trajectory points reflect the continuous trajectory of agricultural machine movement, so they have spatio-temporal correlations with each other. Mining these correlations can help improve the field-road classification efficiency. A GAN-BiLSTM is proposed in this paper to efficiently perform field-road classification. As shown in Fig. 4, the GAN-BiLSTM mainly consists of the following parts."
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.533,
+                0.315,
+                0.938,
+                0.393
+            ],
+            "angle": 0,
+            "content": "- Data pre-processing and data augmentation: To obtain high-quality motion trajectories and solve the problem of imbalanced distribution of trajectory samples, duplicate and drifting trajectory points are first removed. Then, data augmentation is performed by the CTGAN to balance the dataset (presented in Section 2.2.1)."
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.533,
+                0.394,
+                0.938,
+                0.459
+            ],
+            "angle": 0,
+            "content": "- Input feature extraction: First, five motion features are derived from the GNSS records using Eqs. (1)-(4). Then, time window extraction is performed for each motion feature using two different window sizes. Finally, each trajectory point has 27 features in total (presented in Section 2.2.2)."
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.533,
+                0.46,
+                0.938,
+                0.526
+            ],
+            "angle": 0,
+            "content": "- Att-BiLSTM model: Field-road classification is performed using the Att-BiLSTM. The spatio-temporal characteristics of the trajectories are captured using BiLSTM. The model will focus on more important trajectory points through the attention mechanism (presented in Section 2.2.3)."
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.533,
+                0.527,
+                0.938,
+                0.567
+            ],
+            "angle": 0,
+            "content": "- Focal loss training: Focal loss is used as the loss function to train the Att-BiLSTM model to focus on hard-to-predict points and improve the classification effect (presented in Section 2.2.4)."
+        },
+        {
+            "type": "list",
+            "bbox": [
+                0.533,
+                0.315,
+                0.938,
+                0.567
+            ],
+            "angle": 0,
+            "content": null
+        },
+        {
+            "type": "title",
+            "bbox": [
+                0.51,
+                0.58,
+                0.803,
+                0.593
+            ],
+            "angle": 0,
+            "content": "2.2.1. Data pre-processing and data augmentation"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.509,
+                0.593,
+                0.938,
+                0.854
+            ],
+            "angle": 0,
+            "content": "The performance of the GNSS receiver can be impacted by multiple sources of positioning errors, including atmospheric effects, multipath, and poor signals, all of which may result in coordinate drifts. Additionally, frequent braking, such as during stopping and turning operations, can also influence GNSS receiver performance. It is worth noting that the accuracy of classification is directly influenced by the performance of the GNSS receiver (Karaim et al., 2018). Hence, similar to the preprocessing steps outlined in Chen et al. (2021, 2022), we commence by eliminating duplicate and drifting trajectory points. Specifically, we remove consecutive duplicate trajectory points with identical latitude and longitude coordinates, as well as consecutive drifting trajectory points characterized by different latitude and longitude coordinates but with a velocity of zero. This preprocessing method holds an advantage in that it employs a set of a priori rules for data preprocessing without the need for parameterization. Furthermore, the imbalance problem of GNSS points affects the classification accuracy. In the data imbalance problem in field-road classification, the number of field points is much higher than that of road points because most of the agricultural machinery movement is in the field. To solve this problem, our approach uses a CTGAN to balance the dataset."
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.509,
+                0.857,
+                0.938,
+                0.935
+            ],
+            "angle": 0,
+            "content": "The CTGAN consists of a conditional generator and a discriminator. The conditional generator can specify conditions for a generation. The CTGAN adopts the PacGAN network architecture (Lin et al., 2018), which can prevent pattern collapse by packing multiple generated samples into the discriminator, 10 generated samples at a time in the CTGAN. Meanwhile, the CTGAN utilizes Wasserstein GAN loss with"
+        },
+        {
+            "type": "page_number",
+            "bbox": [
+                0.495,
+                0.952,
+                0.505,
+                0.961
+            ],
+            "angle": 0,
+            "content": "3"
+        }
+    ],
+    [
+        {
+            "type": "header",
+            "bbox": [
+                0.061,
+                0.043,
+                0.13,
+                0.053
+            ],
+            "angle": 0,
+            "content": "W. Zhai et al."
+        },
+        {
+            "type": "header",
+            "bbox": [
+                0.657,
+                0.043,
+                0.94,
+                0.054
+            ],
+            "angle": 0,
+            "content": "Computers and Electronics in Agriculture 216 (2024) 108457"
+        },
+        {
+            "type": "image",
+            "bbox": [
+                0.082,
+                0.067,
+                0.917,
+                0.786
+            ],
+            "angle": 0,
+            "content": null
+        },
+        {
+            "type": "image_caption",
+            "bbox": [
+                0.377,
+                0.802,
+                0.619,
+                0.814
+            ],
+            "angle": 0,
+            "content": "Fig. 4. The GAN-BILSTM architecture proposal."
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.058,
+                0.846,
+                0.486,
+                0.883
+            ],
+            "angle": 0,
+            "content": "gradient penalty (Gulrajani et al., 2017) for training and solves the GAN model training instability problem by introducing the Wasserstein distance."
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.058,
+                0.884,
+                0.487,
+                0.936
+            ],
+            "angle": 0,
+            "content": "As shown in Fig. 5, we employ trajectory data to train the CTGAN. Initially, we randomly select a class from \"Field\" and \"Road\". In the figure, the field class is selected. Subsequently, we embed the one-hot code (01) corresponding to the field as a conditioning input in"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.509,
+                0.846,
+                0.938,
+                0.936
+            ],
+            "angle": 0,
+            "content": "the generator, coupled with stochastic noise, to effectuate generation. Finally, the spurious points generated by the generator are put into the discriminator output score together with the randomly selected real field point. After adequately training the conditional generator and discriminator, we utilize the former to generate road points by setting the conditioning input to 10, which are then appended to the original dataset to rectify the data imbalance issue. This approach ensures"
+        },
+        {
+            "type": "page_number",
+            "bbox": [
+                0.495,
+                0.952,
+                0.505,
+                0.961
+            ],
+            "angle": 0,
+            "content": "4"
+        }
+    ],
+    [
+        {
+            "type": "header",
+            "bbox": [
+                0.06,
+                0.043,
+                0.13,
+                0.053
+            ],
+            "angle": 0,
+            "content": "W. Zhai et al."
+        },
+        {
+            "type": "header",
+            "bbox": [
+                0.657,
+                0.043,
+                0.941,
+                0.054
+            ],
+            "angle": 0,
+            "content": "Computers and Electronics in Agriculture 216 (2024) 108457"
+        },
+        {
+            "type": "image",
+            "bbox": [
+                0.082,
+                0.066,
+                0.918,
+                0.379
+            ],
+            "angle": 0,
+            "content": null
+        },
+        {
+            "type": "image_caption",
+            "bbox": [
+                0.25,
+                0.385,
+                0.744,
+                0.397
+            ],
+            "angle": 0,
+            "content": "Fig. 5. CTGAN training procedure: Addressing Data imbalance through trajectory point generation."
+        },
+        {
+            "type": "image",
+            "bbox": [
+                0.068,
+                0.412,
+                0.479,
+                0.472
+            ],
+            "angle": 0,
+            "content": null
+        },
+        {
+            "type": "image_caption",
+            "bbox": [
+                0.15,
+                0.481,
+                0.395,
+                0.493
+            ],
+            "angle": 0,
+            "content": "Fig. 6. Time window feature extraction process."
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.058,
+                0.522,
+                0.487,
+                0.561
+            ],
+            "angle": 0,
+            "content": "that the numbers of field and road points are equivalent, resulting in a balanced dataset. The accuracy of our model is improved by the decrease in the imbalance rate of the dataset."
+        },
+        {
+            "type": "title",
+            "bbox": [
+                0.059,
+                0.575,
+                0.208,
+                0.587
+            ],
+            "angle": 0,
+            "content": "2.2.2. Feature extraction"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.058,
+                0.587,
+                0.487,
+                0.68
+            ],
+            "angle": 0,
+            "content": "As mentioned in Section 2.2, a spatio-temporal correlation exists between the trajectory points of agricultural machinery. For a set of trajectory point records \\( R = \\{R_{1}, R_{2}, \\dots, R_{n}\\} \\), each trajectory point record \\( R_{i} = [longitude, latitude, speed, direction, time] \\). We construct five motion features based on the point records. First, the speed in the point records is directly used as the first motion feature, and the remaining four features are calculated using Eqs (1)-(4)."
+        },
+        {
+            "type": "equation",
+            "bbox": [
+                0.059,
+                0.684,
+                0.486,
+                0.711
+            ],
+            "angle": 0,
+            "content": "\\[\na _ {i} = \\frac {\\text {s p e e d} _ {i + 1} - \\text {s p e e d} _ {i}}{\\text {t i m e} _ {i + 1} - \\text {t i m e} _ {i}} \\tag {1}\n\\]"
+        },
+        {
+            "type": "equation",
+            "bbox": [
+                0.059,
+                0.716,
+                0.486,
+                0.73
+            ],
+            "angle": 0,
+            "content": "\\[\nd _ {i} = \\text {d i r e c t i o n} _ {i + 1} - \\text {d i r e c t i o n} _ {i} \\tag {2}\n\\]"
+        },
+        {
+            "type": "equation",
+            "bbox": [
+                0.059,
+                0.732,
+                0.486,
+                0.757
+            ],
+            "angle": 0,
+            "content": "\\[\nh _ {i} = \\frac {d _ {i}}{\\text {t i m e} _ {i + 1} - \\text {t i m e} _ {i}} \\tag {3}\n\\]"
+        },
+        {
+            "type": "equation",
+            "bbox": [
+                0.059,
+                0.759,
+                0.485,
+                0.786
+            ],
+            "angle": 0,
+            "content": "\\[\nk _ {i} = \\frac {h _ {i + 1} - h _ {i}}{\\text {t i m e} _ {i + 1} - \\text {t i m e} _ {i}} \\tag {4}\n\\]"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.058,
+                0.79,
+                0.487,
+                0.882
+            ],
+            "angle": 0,
+            "content": "\\(a_{i},d_{i},h_{i}\\), and \\(k_{i}\\) denote the acceleration, angle difference, angular velocity, and angular acceleration at record \\(R_{i}\\), respectively. Now, we have five motion features. Then, a time window (Fig. 6) feature extraction method is used as a feature extraction operator to extract the window features of the motion features. The feature extraction operator calculates the window's median and standard deviation of motion features using Eqs. (5)-(6)."
+        },
+        {
+            "type": "equation",
+            "bbox": [
+                0.06,
+                0.89,
+                0.486,
+                0.904
+            ],
+            "angle": 0,
+            "content": "\\[\nM D _ {i} = \\text {M e d i a n} \\left(x _ {i - s i z e}, \\dots , x _ {i}\\right) \\tag {5}\n\\]"
+        },
+        {
+            "type": "equation",
+            "bbox": [
+                0.065,
+                0.907,
+                0.486,
+                0.94
+            ],
+            "angle": 0,
+            "content": "\\[\nS D _ {i} = \\sqrt {\\frac {\\sum_ {j = i - s i z e} ^ {j = i} \\left(x _ {j} - \\mu\\right)}{s i z e}} \\tag {6}\n\\]"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.509,
+                0.412,
+                0.938,
+                0.476
+            ],
+            "angle": 0,
+            "content": "Here, size represents the window size, Median represents the median of the sequence, and \\(\\mu\\) represents the average of the sequence. The feature extraction operator performs time window feature extraction for all the five motion features, and each feature is extracted twice using two different window size."
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.509,
+                0.477,
+                0.939,
+                0.556
+            ],
+            "angle": 0,
+            "content": "According to Eqs. (1)-(4), five motion features are derived from the original trajectory point records. Then, 20 features of time window feature extraction are calculated by Eqs. (5)-(6). A total of 25 motion-based features, along with latitude and longitude coordinates, constitute 27 features. With these 27 features, the Att-BiLSTM can better capture the spatio-temporal correlation between trajectory points."
+        },
+        {
+            "type": "title",
+            "bbox": [
+                0.51,
+                0.568,
+                0.662,
+                0.579
+            ],
+            "angle": 0,
+            "content": "2.2.3. Att-BiLSTM model"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.509,
+                0.581,
+                0.938,
+                0.62
+            ],
+            "angle": 0,
+            "content": "The trajectory point records are transformed through feature extraction into a sequence of trajectory point vectors, which are formally represented as shown in Eq. (7)."
+        },
+        {
+            "type": "equation",
+            "bbox": [
+                0.511,
+                0.628,
+                0.938,
+                0.642
+            ],
+            "angle": 0,
+            "content": "\\[\nP = \\left[ P _ {1}, P _ {2}, \\dots , P _ {T} \\right] \\tag {7}\n\\]"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.509,
+                0.648,
+                0.938,
+                0.686
+            ],
+            "angle": 0,
+            "content": "Here, \\( P \\) represents vector sequence and \\( P_T \\) represents a certain trajectory point vector. With this vector sequence as input, the GAN-BiLSTM adopts an Att-BiLSTM for field-road classification."
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.509,
+                0.687,
+                0.938,
+                0.803
+            ],
+            "angle": 0,
+            "content": "The LSTM consists of an input layer, a hidden layer, and an output layer. However, the LSTM can only learn information from the forward direction, preventing it from encoding information from the backward to the forward direction. The features of the back trajectory points also contain the information of the front trajectory points, so the information from backward to forward is also very important. The BiLSTM divides the hidden neurons of the standard LSTM into forward transfer and backward transfer, capturing the information between trajectory points from both directions."
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.509,
+                0.803,
+                0.939,
+                0.856
+            ],
+            "angle": 0,
+            "content": "As shown in Fig. 7, \\( h_t^f \\) and \\( h_t^b \\) are the hidden states at moment \\( t \\) in the forward pass and the backward pass, respectively. We connect the two hidden states as \\( h_t \\) to utilize the contextual information of the forward and backward propagations as Eq. (8)."
+        },
+        {
+            "type": "equation",
+            "bbox": [
+                0.51,
+                0.862,
+                0.938,
+                0.878
+            ],
+            "angle": 0,
+            "content": "\\[\nh _ {t} = \\operatorname {c o n c a t} \\left(h _ {t} ^ {f}, h _ {t} ^ {b}\\right) \\tag {8}\n\\]"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.509,
+                0.883,
+                0.939,
+                0.936
+            ],
+            "angle": 0,
+            "content": "The trajectory samples record the continuous trajectories of agricultural machinery movement, and different trajectory points have different correlations of spatial and temporal. Usually, agricultural machines have low-speed uniform motion during field operations, making"
+        },
+        {
+            "type": "page_number",
+            "bbox": [
+                0.495,
+                0.952,
+                0.504,
+                0.961
+            ],
+            "angle": 0,
+            "content": "5"
+        }
+    ],
+    [
+        {
+            "type": "header",
+            "bbox": [
+                0.06,
+                0.043,
+                0.131,
+                0.053
+            ],
+            "angle": 0,
+            "content": "W. Zhai et al."
+        },
+        {
+            "type": "header",
+            "bbox": [
+                0.657,
+                0.043,
+                0.941,
+                0.054
+            ],
+            "angle": 0,
+            "content": "Computers and Electronics in Agriculture 216 (2024) 108457"
+        },
+        {
+            "type": "image",
+            "bbox": [
+                0.082,
+                0.066,
+                0.924,
+                0.429
+            ],
+            "angle": 0,
+            "content": null
+        },
+        {
+            "type": "image_caption",
+            "bbox": [
+                0.265,
+                0.437,
+                0.731,
+                0.449
+            ],
+            "angle": 0,
+            "content": "Fig. 7. Architecture of attention-based bidirectional long short-term memory neural network."
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.058,
+                0.464,
+                0.486,
+                0.544
+            ],
+            "angle": 0,
+            "content": "their motion features approximate and near each other in space. On the road, due to the changing road conditions, agricultural machines usually have variable speed movements, resulting in their variable motion features. BiLSTM captures the sequence information of trajectories according to the motion features. However, BiLSTM cannot distinguish the importance of each trajectory point."
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.058,
+                0.544,
+                0.486,
+                0.703
+            ],
+            "angle": 0,
+            "content": "Given that different trajectory points affect the classification results differently, we introduce the attention mechanism into the BiLSTM model by assigning weights to the trajectory points. Furthermore, the effect of trajectory point noise is reduced because the trajectory points with noise tend to be unimportant and are likely to be assigned low weights. Importance is automatically learned from the attention layer. We establish an attention layer by connecting a fully connected layer (referred to as the FC layer in Fig. 7) to the hidden state \\( h_t \\). The output of this layer is represented as the attention weight \\( \\alpha_t \\), which serves as an indicator of the significance of the trajectory points. A higher value of \\( \\alpha_t \\) indicates that the model allocates more attention to the specific trajectory point. \\( \\alpha_t \\) is calculated by Eq. (9)."
+        },
+        {
+            "type": "equation",
+            "bbox": [
+                0.059,
+                0.711,
+                0.486,
+                0.726
+            ],
+            "angle": 0,
+            "content": "\\[\n\\alpha_ {t} = \\tanh  \\left(W _ {t} ^ {\\alpha} \\cdot h _ {t}\\right) \\tag {9}\n\\]"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.058,
+                0.732,
+                0.487,
+                0.772
+            ],
+            "angle": 0,
+            "content": "where \\( W_{t}^{\\alpha} \\) is the attention layer weight at moment \\( t \\). Finally, we weigh and sum all these hidden states and output the classification result through a softmax layer, which is calculated by Eq. (10)."
+        },
+        {
+            "type": "equation",
+            "bbox": [
+                0.059,
+                0.778,
+                0.486,
+                0.811
+            ],
+            "angle": 0,
+            "content": "\\[\n\\operatorname {p r e d} = \\operatorname {s o f t m a x} \\sum_ {t = 1} ^ {T} \\left(\\alpha_ {t} \\cdot h _ {t}\\right) \\tag {10}\n\\]"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.058,
+                0.815,
+                0.487,
+                0.882
+            ],
+            "angle": 0,
+            "content": "The variable pred represents a normalized probability vector. We determine the label for each trajectory point by selecting the value with the highest probability. The process of field-road classification is achieved through the classification of points into either the field or road category."
+        },
+        {
+            "type": "title",
+            "bbox": [
+                0.059,
+                0.896,
+                0.208,
+                0.908
+            ],
+            "angle": 0,
+            "content": "2.2.4. Focal loss training"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.058,
+                0.909,
+                0.486,
+                0.936
+            ],
+            "angle": 0,
+            "content": "We use focal loss to train the Att-BiLSTM model to improve the accuracy of the hard-to-predict points."
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.509,
+                0.464,
+                0.938,
+                0.608
+            ],
+            "angle": 0,
+            "content": "Focal loss is the loss function proposed by Lin et al. (2020) and was initially used in the image field to address the impact of data imbalance on model performance. This function applies the prediction probability as a modulation term in the cross-entropy loss (De Boer et al., 2005) to increase the weight of hard-to-classify samples in the loss function. Thus, focal loss directs the focus of training on the hard-to-classify trajectory points. In field-road classification, due to the data distribution imbalance problem, we use focal loss as the loss function to train the Att-BiLSTM model to focus the training on the hard-to-classify road trajectory points and improve the accuracy of the model further. Focal loss is calculated using Eq. (11)."
+        },
+        {
+            "type": "equation",
+            "bbox": [
+                0.511,
+                0.616,
+                0.938,
+                0.63
+            ],
+            "angle": 0,
+            "content": "\\[\nF L \\left(p _ {t}\\right) = - \\left(1 - p _ {t}\\right) ^ {\\gamma} \\log \\left(p _ {t}\\right) \\tag {11}\n\\]"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.509,
+                0.636,
+                0.938,
+                0.689
+            ],
+            "angle": 0,
+            "content": "Here, \\( p_t \\) represents the predicted probability, \\( \\gamma \\) is a positive hyperparameter, and \\( FL(p_t) \\) represents the predicted loss. We use focal loss as the loss function and Adam (Kingma and Ba, 2015) as the optimizer to optimize the model parameters."
+        },
+        {
+            "type": "title",
+            "bbox": [
+                0.51,
+                0.701,
+                0.649,
+                0.712
+            ],
+            "angle": 0,
+            "content": "2.3. Evaluation metrics"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.509,
+                0.727,
+                0.938,
+                0.793
+            ],
+            "angle": 0,
+            "content": "Field-road classification is a binary classification problem. Precision, recall, F1 score, and accuracy usually used to assess the capability of a classification method. We define the field trajectory point as positive and the road trajectory point as negative. Eqs. (12)-(15) calculate the precision, the recall, the F1 score, and the accuracy, respectively."
+        },
+        {
+            "type": "equation",
+            "bbox": [
+                0.512,
+                0.808,
+                0.937,
+                0.833
+            ],
+            "angle": 0,
+            "content": "\\[\nP r e c i s i o n = \\frac {t p}{t p + f p} \\tag {12}\n\\]"
+        },
+        {
+            "type": "equation",
+            "bbox": [
+                0.513,
+                0.835,
+                0.937,
+                0.857
+            ],
+            "angle": 0,
+            "content": "\\[\n\\text {R e c a l l} = \\frac {t p}{t p + f n} \\tag {13}\n\\]"
+        },
+        {
+            "type": "equation",
+            "bbox": [
+                0.513,
+                0.858,
+                0.937,
+                0.882
+            ],
+            "angle": 0,
+            "content": "\\[\nF 1 = 2 \\times \\frac {\\text {P r e c i s i o n} \\times \\text {R e c a l l}}{\\text {P r e c i s i o n} + \\text {R e c a l l}} \\tag {14}\n\\]"
+        },
+        {
+            "type": "equation",
+            "bbox": [
+                0.513,
+                0.883,
+                0.937,
+                0.907
+            ],
+            "angle": 0,
+            "content": "\\[\nA c c u r a c y = \\frac {t p + t n}{t p + t n + f p + f n} \\tag {15}\n\\]"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.51,
+                0.91,
+                0.938,
+                0.935
+            ],
+            "angle": 0,
+            "content": "Here, \\(tp\\) means true positive, \\(tn\\) means true negative, \\(fp\\) means false positive, and \\(fn\\) means false negative."
+        },
+        {
+            "type": "page_number",
+            "bbox": [
+                0.495,
+                0.953,
+                0.504,
+                0.961
+            ],
+            "angle": 0,
+            "content": "6"
+        }
+    ],
+    [
+        {
+            "type": "header",
+            "bbox": [
+                0.061,
+                0.043,
+                0.13,
+                0.053
+            ],
+            "angle": 0,
+            "content": "W. Zhai et al."
+        },
+        {
+            "type": "header",
+            "bbox": [
+                0.657,
+                0.043,
+                0.94,
+                0.054
+            ],
+            "angle": 0,
+            "content": "Computers and Electronics in Agriculture 216 (2024) 108457"
+        },
+        {
+            "type": "header",
+            "bbox": [
+                0.863,
+                0.069,
+                0.905,
+                0.086
+            ],
+            "angle": 0,
+            "content": "Field Road"
+        },
+        {
+            "type": "image",
+            "bbox": [
+                0.093,
+                0.101,
+                0.249,
+                0.218
+            ],
+            "angle": 0,
+            "content": null
+        },
+        {
+            "type": "image_caption",
+            "bbox": [
+                0.126,
+                0.219,
+                0.216,
+                0.227
+            ],
+            "angle": 0,
+            "content": "(a) Ground-truth Trajectory"
+        },
+        {
+            "type": "image",
+            "bbox": [
+                0.254,
+                0.101,
+                0.409,
+                0.218
+            ],
+            "angle": 0,
+            "content": null
+        },
+        {
+            "type": "image_caption",
+            "bbox": [
+                0.258,
+                0.219,
+                0.404,
+                0.227
+            ],
+            "angle": 0,
+            "content": "(b) Trajectory Segmented by GAN-BiLSTM"
+        },
+        {
+            "type": "image",
+            "bbox": [
+                0.414,
+                0.101,
+                0.569,
+                0.218
+            ],
+            "angle": 0,
+            "content": null
+        },
+        {
+            "type": "image_caption",
+            "bbox": [
+                0.435,
+                0.219,
+                0.547,
+                0.227
+            ],
+            "angle": 0,
+            "content": "(c) Trajectory Segmented by GCN"
+        },
+        {
+            "type": "image",
+            "bbox": [
+                0.572,
+                0.101,
+                0.728,
+                0.218
+            ],
+            "angle": 0,
+            "content": null
+        },
+        {
+            "type": "image_caption",
+            "bbox": [
+                0.596,
+                0.219,
+                0.704,
+                0.227
+            ],
+            "angle": 0,
+            "content": "(d) Trajectory Segmented by DT"
+        },
+        {
+            "type": "image",
+            "bbox": [
+                0.732,
+                0.101,
+                0.888,
+                0.218
+            ],
+            "angle": 0,
+            "content": null
+        },
+        {
+            "type": "image_caption",
+            "bbox": [
+                0.733,
+                0.219,
+                0.888,
+                0.227
+            ],
+            "angle": 0,
+            "content": "(e) Trajectory Segmented by DBSCAN \\(^+\\) Rules"
+        },
+        {
+            "type": "image",
+            "bbox": [
+                0.093,
+                0.239,
+                0.249,
+                0.356
+            ],
+            "angle": 0,
+            "content": null
+        },
+        {
+            "type": "image_caption",
+            "bbox": [
+                0.126,
+                0.357,
+                0.215,
+                0.364
+            ],
+            "angle": 0,
+            "content": "(a) Ground-truth Trajectory"
+        },
+        {
+            "type": "image",
+            "bbox": [
+                0.254,
+                0.239,
+                0.41,
+                0.356
+            ],
+            "angle": 0,
+            "content": null
+        },
+        {
+            "type": "image_caption",
+            "bbox": [
+                0.258,
+                0.357,
+                0.404,
+                0.364
+            ],
+            "angle": 0,
+            "content": "(b) Trajectory Segmented by GAN-BiLSTM"
+        },
+        {
+            "type": "image",
+            "bbox": [
+                0.414,
+                0.239,
+                0.57,
+                0.356
+            ],
+            "angle": 0,
+            "content": null
+        },
+        {
+            "type": "image_caption",
+            "bbox": [
+                0.435,
+                0.357,
+                0.547,
+                0.364
+            ],
+            "angle": 0,
+            "content": "(c) Trajectory Segmented by GCN"
+        },
+        {
+            "type": "image",
+            "bbox": [
+                0.572,
+                0.239,
+                0.728,
+                0.356
+            ],
+            "angle": 0,
+            "content": null
+        },
+        {
+            "type": "image_caption",
+            "bbox": [
+                0.596,
+                0.357,
+                0.703,
+                0.364
+            ],
+            "angle": 0,
+            "content": "(d) Trajectory Segmented by DT"
+        },
+        {
+            "type": "image",
+            "bbox": [
+                0.733,
+                0.239,
+                0.888,
+                0.356
+            ],
+            "angle": 0,
+            "content": null
+        },
+        {
+            "type": "image_caption",
+            "bbox": [
+                0.733,
+                0.357,
+                0.888,
+                0.364
+            ],
+            "angle": 0,
+            "content": "(e) Trajectory Segmented by DBSCAN + Rules"
+        },
+        {
+            "type": "image_caption",
+            "bbox": [
+                0.31,
+                0.376,
+                0.685,
+                0.388
+            ],
+            "angle": 0,
+            "content": "Fig. 8. Visualization results of field-road classification for sample 1 and 2."
+        },
+        {
+            "type": "title",
+            "bbox": [
+                0.059,
+                0.404,
+                0.228,
+                0.416
+            ],
+            "angle": 0,
+            "content": "3. Results and discussion"
+        },
+        {
+            "type": "title",
+            "bbox": [
+                0.059,
+                0.431,
+                0.2,
+                0.444
+            ],
+            "angle": 0,
+            "content": "3.1. Experimental setup"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.058,
+                0.457,
+                0.486,
+                0.549
+            ],
+            "angle": 0,
+            "content": "Baseline: In our experiments, to evaluate the performance of our proposed method, we compared GAN-BiLSTM with three baseline methods: Graph Convolutional Neural Network (Chen et al., 2022, GCN), Decision Tree (Poteko et al., 2021, DT), and DBSCAN + Rules (Chen et al., 2021). GCN and DT are advanced methods for field-road classification. The hyperparameters of these methods are optimized for accuracy."
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.058,
+                0.55,
+                0.486,
+                0.721
+            ],
+            "angle": 0,
+            "content": "Model implementation: All baseline models and proposed method were coded in Python 3.9.1 and implemented using the Pytorch 1.10.1 (Paszke et al., 2019). In our experiments, we split the dataset into training and test sets using a 7:3 ratio. To prevent any trajectory leakage, we designated the top \\(70\\%\\) of trajectories as the training set, leaving the remainder for the test set. We empirically employed window sizes of 5 and 50. The hidden layer of the LSTM unit has a size of 256, and the fully connected layer comprises three consecutive 512-dimensional networks, each activated by ReLU with a dropout probability of 0.3. The learning rate for Att-BiLSTM was configured at 0.001, with a weight decay of 0.01 applied to the Adam optimizer. All model comparisons were performed on the same dataset after retraining using the optimal parameters."
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.058,
+                0.722,
+                0.485,
+                0.762
+            ],
+            "angle": 0,
+            "content": "Hardware environment: We conducted all the experiments on a Windows 11 operating system with Intel(R) Core(TM) I9-12900K CPU (3.9 GHz), 16 GB RAM, and RTX 3090 graphics card."
+        },
+        {
+            "type": "title",
+            "bbox": [
+                0.059,
+                0.776,
+                0.204,
+                0.789
+            ],
+            "angle": 0,
+            "content": "3.2. Method comparison"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.058,
+                0.803,
+                0.486,
+                0.936
+            ],
+            "angle": 0,
+            "content": "We first used 10 samples to train and evaluate the effectiveness of the GAN-BiLSTM. The results are presented in Tables 1-2. Table 1 displays the comprehensive metrics across ten single samples. Remarkably, all sample accuracy rates exceed 0.9, serving as an initial indication of our model's validity. In Table 2, we present precision and recall rates for the two specific categories. Notably, these metrics for both categories closely align, offering an initial indication of progress in addressing the lower metrics associated with road point classification. Fig. 8 shows the results of the field-road classification for trajectory sample 1 and 2. Fig. 9 illustrates the confusion matrices corresponding"
+        },
+        {
+            "type": "image",
+            "bbox": [
+                0.52,
+                0.404,
+                0.605,
+                0.459
+            ],
+            "angle": 0,
+            "content": null
+        },
+        {
+            "type": "image",
+            "bbox": [
+                0.607,
+                0.404,
+                0.687,
+                0.459
+            ],
+            "angle": 0,
+            "content": null
+        },
+        {
+            "type": "image",
+            "bbox": [
+                0.688,
+                0.404,
+                0.767,
+                0.459
+            ],
+            "angle": 0,
+            "content": null
+        },
+        {
+            "type": "image",
+            "bbox": [
+                0.768,
+                0.404,
+                0.852,
+                0.459
+            ],
+            "angle": 0,
+            "content": null
+        },
+        {
+            "type": "image",
+            "bbox": [
+                0.853,
+                0.404,
+                0.93,
+                0.459
+            ],
+            "angle": 0,
+            "content": null
+        },
+        {
+            "type": "image",
+            "bbox": [
+                0.521,
+                0.464,
+                0.605,
+                0.519
+            ],
+            "angle": 0,
+            "content": null
+        },
+        {
+            "type": "image",
+            "bbox": [
+                0.606,
+                0.464,
+                0.687,
+                0.519
+            ],
+            "angle": 0,
+            "content": null
+        },
+        {
+            "type": "image",
+            "bbox": [
+                0.688,
+                0.464,
+                0.767,
+                0.519
+            ],
+            "angle": 0,
+            "content": null
+        },
+        {
+            "type": "image",
+            "bbox": [
+                0.768,
+                0.464,
+                0.852,
+                0.519
+            ],
+            "angle": 0,
+            "content": null
+        },
+        {
+            "type": "image",
+            "bbox": [
+                0.853,
+                0.464,
+                0.93,
+                0.519
+            ],
+            "angle": 0,
+            "content": null
+        },
+        {
+            "type": "image_caption",
+            "bbox": [
+                0.509,
+                0.53,
+                0.938,
+                0.552
+            ],
+            "angle": 0,
+            "content": "Fig. 9. Confusion matrices for the initial ten samples, ordered from top left to bottom right."
+        },
+        {
+            "type": "table_caption",
+            "bbox": [
+                0.511,
+                0.569,
+                0.816,
+                0.59
+            ],
+            "angle": 0,
+            "content": "Table 1 Evaluation results of the GAN-BiLSTM for ten single samples."
+        },
+        {
+            "type": "table",
+            "bbox": [
+                0.513,
+                0.59,
+                0.938,
+                0.719
+            ],
+            "angle": 0,
+            "content": "<table><tr><td>Sample index</td><td>Pre</td><td>Rec</td><td>F1</td><td>Acc</td></tr><tr><td>1</td><td>0.942</td><td>0.972</td><td>0.955</td><td>0.967</td></tr><tr><td>2</td><td>0.917</td><td>0.915</td><td>0.916</td><td>0.916</td></tr><tr><td>3</td><td>0.933</td><td>0.892</td><td>0.910</td><td>0.931</td></tr><tr><td>4</td><td>0.873</td><td>0.851</td><td>0.861</td><td>0.901</td></tr><tr><td>5</td><td>0.914</td><td>0.927</td><td>0.916</td><td>0.917</td></tr><tr><td>6</td><td>0.881</td><td>0.911</td><td>0.896</td><td>0.961</td></tr><tr><td>7</td><td>0.915</td><td>0.929</td><td>0.922</td><td>0.945</td></tr><tr><td>8</td><td>0.864</td><td>0.859</td><td>0.861</td><td>0.949</td></tr><tr><td>9</td><td>0.941</td><td>0.890</td><td>0.914</td><td>0.982</td></tr><tr><td>10</td><td>0.895</td><td>0.779</td><td>0.825</td><td>0.957</td></tr></table>"
+        },
+        {
+            "type": "table_footnote",
+            "bbox": [
+                0.51,
+                0.721,
+                0.879,
+                0.732
+            ],
+            "angle": 0,
+            "content": "Pre: average precision; Rec: average recall; F1: average F1; Acc: accuracy."
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.509,
+                0.762,
+                0.937,
+                0.787
+            ],
+            "angle": 0,
+            "content": "to ten samples. We found that the model achieved favorable results in most cases."
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.509,
+                0.789,
+                0.938,
+                0.936
+            ],
+            "angle": 0,
+            "content": "We used all samples for model training and comparison to further evaluate the model's generality. The experimental results of the model comparison on all samples are presented in Table 3. Table 3 indicates that the GAN-BiLSTM model works most effectively with \\(92.3\\%\\) accuracy, exhibiting a \\(5.9\\%\\) improvement compared with GCN, a \\(8.2\\%\\) improvement compared with DT, and a \\(2.5\\%\\) improvement compared with DBSCAN+Rules. The proposed model's performance is better than that of the three baseline methods. Table 4 presents the detailed experimental results of the four methods on field and road points. Table 4 indicates that the GAN-BiLSTM model improved the recall rate of road points compared with the baseline methods, that is, \\(11.0\\%\\) compared"
+        },
+        {
+            "type": "page_number",
+            "bbox": [
+                0.495,
+                0.952,
+                0.504,
+                0.961
+            ],
+            "angle": 0,
+            "content": "7"
+        }
+    ],
+    [
+        {
+            "type": "header",
+            "bbox": [
+                0.06,
+                0.044,
+                0.13,
+                0.053
+            ],
+            "angle": 0,
+            "content": "W. Zhai et al."
+        },
+        {
+            "type": "header",
+            "bbox": [
+                0.657,
+                0.043,
+                0.94,
+                0.055
+            ],
+            "angle": 0,
+            "content": "Computers and Electronics in Agriculture 216 (2024) 108457"
+        },
+        {
+            "type": "table_caption",
+            "bbox": [
+                0.06,
+                0.068,
+                0.455,
+                0.088
+            ],
+            "angle": 0,
+            "content": "Table 2 Evaluation results of the GAN-BiLSTM for ten single samples on two categories."
+        },
+        {
+            "type": "table",
+            "bbox": [
+                0.06,
+                0.088,
+                0.486,
+                0.234
+            ],
+            "angle": 0,
+            "content": "<table><tr><td rowspan=\"2\">Sample index</td><td colspan=\"2\">Field</td><td colspan=\"2\">Road</td></tr><tr><td>Pre</td><td>Rec</td><td>Pre</td><td>Rec</td></tr><tr><td>1</td><td>0.994</td><td>0.963</td><td>0.891</td><td>0.980</td></tr><tr><td>2</td><td>0.900</td><td>0.944</td><td>0.935</td><td>0.885</td></tr><tr><td>3</td><td>0.928</td><td>0.980</td><td>0.940</td><td>0.804</td></tr><tr><td>4</td><td>0.923</td><td>0.948</td><td>0.824</td><td>0.753</td></tr><tr><td>5</td><td>0.843</td><td>0.981</td><td>0.985</td><td>0.872</td></tr><tr><td>6</td><td>0.983</td><td>0.974</td><td>0.780</td><td>0.849</td></tr><tr><td>7</td><td>0.971</td><td>0.958</td><td>0.858</td><td>0.900</td></tr><tr><td>8</td><td>0.971</td><td>0.972</td><td>0.757</td><td>0.746</td></tr><tr><td>9</td><td>0.987</td><td>0.994</td><td>0.894</td><td>0.786</td></tr><tr><td>10</td><td>0.965</td><td>0.990</td><td>0.826</td><td>0.567</td></tr></table>"
+        },
+        {
+            "type": "table_caption",
+            "bbox": [
+                0.06,
+                0.251,
+                0.273,
+                0.271
+            ],
+            "angle": 0,
+            "content": "Table 3 The overall performances of four methods."
+        },
+        {
+            "type": "table",
+            "bbox": [
+                0.06,
+                0.272,
+                0.486,
+                0.336
+            ],
+            "angle": 0,
+            "content": "<table><tr><td>Method</td><td>Pre</td><td>Rec</td><td>F1</td><td>Acc</td></tr><tr><td>GAN-BiLSTM</td><td>0.926</td><td>0.917</td><td>0.921</td><td>0.923</td></tr><tr><td>GCN</td><td>0.872</td><td>0.851</td><td>0.857</td><td>0.864</td></tr><tr><td>DT</td><td>0.779</td><td>0.822</td><td>0.795</td><td>0.841</td></tr><tr><td>DBSCAN + Rules</td><td>0.930</td><td>0.755</td><td>0.806</td><td>0.898</td></tr></table>"
+        },
+        {
+            "type": "table_caption",
+            "bbox": [
+                0.06,
+                0.354,
+                0.327,
+                0.374
+            ],
+            "angle": 0,
+            "content": "Table 4 The performances of four methods on two categories."
+        },
+        {
+            "type": "table",
+            "bbox": [
+                0.06,
+                0.374,
+                0.486,
+                0.455
+            ],
+            "angle": 0,
+            "content": "<table><tr><td rowspan=\"2\">Method</td><td colspan=\"2\">Field</td><td colspan=\"2\">Road</td></tr><tr><td>Pre</td><td>Rec</td><td>Pre</td><td>Rec</td></tr><tr><td>GAN-BiLSTM</td><td>0.912</td><td>0.958</td><td>0.940</td><td>0.876</td></tr><tr><td>GCN</td><td>0.846</td><td>0.936</td><td>0.897</td><td>0.766</td></tr><tr><td>DT</td><td>0.929</td><td>0.858</td><td>0.630</td><td>0.785</td></tr><tr><td>DBSCAN + Rules</td><td>0.889</td><td>0.996</td><td>0.970</td><td>0.514</td></tr></table>"
+        },
+        {
+            "type": "image",
+            "bbox": [
+                0.071,
+                0.472,
+                0.475,
+                0.744
+            ],
+            "angle": 0,
+            "content": null
+        },
+        {
+            "type": "image_caption",
+            "bbox": [
+                0.058,
+                0.756,
+                0.488,
+                0.8
+            ],
+            "angle": 0,
+            "content": "Fig. 10. Visualization of GAN-BiLSTM Capturing Spatio-Temporal Features: The target point derives spatial context from both preceding (forward) and subsequent (backward) points, and temporal context is represented by the time window indicated by the dotted line."
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.058,
+                0.827,
+                0.486,
+                0.936
+            ],
+            "angle": 0,
+            "content": "with GCN, and \\(9.1\\%\\) compared with DT. These improvements primarily result from the improvement in road point metrics. We contend that the primary challenge faced by the baseline methods lies in their limited ability to effectively discriminate road points. This issue is rooted in the insufficient presence of road points within the trajectory data, creating a data imbalance problem. To address this, our approach employs CTGAN to alleviate the data imbalance problem to some extent. Moreover, the use of the Att-BiLSTM network enhances our capacity to capture"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.509,
+                0.067,
+                0.939,
+                0.118
+            ],
+            "angle": 0,
+            "content": "the spatio-temporal features of the trajectory points. The visualization in Fig. 10 shows how the spatio-temporal features are captured by our model. These combined factors ultimately contribute to superior classification results for our method."
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.509,
+                0.12,
+                0.939,
+                0.422
+            ],
+            "angle": 0,
+            "content": "The difference in classification results of the three comparison models and our method for the same trajectory samples can be caused by their different abilities to utilize the spatial and temporal information of the trajectory points as well as the data imbalance problem. Specifically, the spatial information reflects the agricultural machine's spatial distribution and motion information at fixed time points, which are expressed by attributes, such as latitude, and motion features, such as velocity, which are calculated by Eqs. (1)-(4). The temporal information reflects the difference in motion information at different time points, which is expressed by the median and standard deviation of the motion features calculated by Eqs. (5)-(6). The DT only focuses on spatial information and ignores temporal information. In contrast, GAN-BiLSTM and GCN focus on both spatial and temporal information through neural networks. However, GCN does not address the issue of data imbalance, specifically the higher number of field points compared to road points within the trajectory data. As a result, Att-BiLSTM proves to be a more effective solution than GCN. Moreover, in contrast to GAN-BiLSTM, which extracts information in neural networks, DBSCAN+Rules captures spatial and temporal information in a cascaded way, where DBSCAN utilizes spatial information and Rules use temporal information. However, cascaded design is not an effective approach to capture spatio-temporal information, which is why Att-BiLSTM is more effective than DBSCAN+Rules."
+        },
+        {
+            "type": "title",
+            "bbox": [
+                0.51,
+                0.436,
+                0.738,
+                0.449
+            ],
+            "angle": 0,
+            "content": "4. Method analysis and discussion"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.509,
+                0.462,
+                0.939,
+                0.54
+            ],
+            "angle": 0,
+            "content": "This section discusses how GAN-BiLSTM can improve the model's performance in field-road classification. First, we explain how GAN and Att-BiLSTM in GAN-BiLSTM work together to effectively learn the high-dimensional representation of hidden information in field operation and road driving trajectory points. Then, we analyze how focal loss can effectively improve the model classification."
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.509,
+                0.54,
+                0.939,
+                0.869
+            ],
+            "angle": 0,
+            "content": "Most of the time, agricultural machinery operates in the field. Sampling at the same time interval results in more field trajectory points than road trajectory points, which leads to data imbalance problem. The GAN-BiLSTM does not directly input the agricultural machinery trajectory points into the Att-BiLSTM after data preprocessing to overcome this problem. Instead, the CTGAN first learns the sample distribution in the trajectory to generate a balanced dataset. Consequently, the same amount of data points of both types can be obtained for the Att-BiLSTM to better learn the spatial and temporal information. To further explore the role of CTGAN on field-road classification, we conducted ablation experiments on the entire sample. The results are presented in Tables 5-6 for GAN-BiLSTM without GAN. Table 6 indicates that the CTGAN improves the recall of road points by \\(9.1\\%\\) and the accuracy by \\(3.7\\%\\) compared with directly inputting the trajectory points into the Att-BiLSTM. To demonstrate the advantages of GAN over downsampling, Tables 5-6 for GAN-BiLSTM Balanced showcases the outcomes of dataset balancing using downsampling. In this approach, the number of field points is reduced to equalize them with the number of road points(achieved by randomly discarding some of the field points). Table 5 demonstrates that GTGAN enhances accuracy by \\(3.0\\%\\) and F1 score by \\(4.1\\%\\) when compared to downsampling. Table 6 demonstrates that GTGAN enhances precision by \\(2.8\\%\\) for fields and \\(3.8\\%\\) for roads in comparison to downsampling. These improvements indicate that the GAN module effectively improves the classification results of the model."
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.509,
+                0.87,
+                0.939,
+                0.936
+            ],
+            "angle": 0,
+            "content": "The Att-BiLSTM in this paper refers to the BiLSTM with attention mechanism. Owing to the structural characteristics of the BiLSTM, the network can learn to combine forward and backward propagated dependency information, capturing the spatio-temporal correlation between trajectory points better. The attention mechanism makes the"
+        },
+        {
+            "type": "page_number",
+            "bbox": [
+                0.495,
+                0.952,
+                0.505,
+                0.961
+            ],
+            "angle": 0,
+            "content": "8"
+        }
+    ],
+    [
+        {
+            "type": "header",
+            "bbox": [
+                0.06,
+                0.044,
+                0.129,
+                0.053
+            ],
+            "angle": 0,
+            "content": "W. Zhai et al."
+        },
+        {
+            "type": "header",
+            "bbox": [
+                0.657,
+                0.044,
+                0.94,
+                0.054
+            ],
+            "angle": 0,
+            "content": "Computers and Electronics in Agriculture 216 (2024) 108457"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.058,
+                0.067,
+                0.486,
+                0.131
+            ],
+            "angle": 0,
+            "content": "network automatically focus on the critical trajectory points and reduces the effect of noise. Tables 3 and 5 indicate that the GAN-BiLSTM without GAN displays a \\(2.2\\%\\) improvement in accuracy compared with GCN. These improvements indicate that the Att-BiLSTM can effectively learn the spatio-temporal information between trajectory points."
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.058,
+                0.131,
+                0.486,
+                0.257
+            ],
+            "angle": 0,
+            "content": "Focal loss can further improve the model classification accuracy. Specifically, this function improves the model's accuracy by focusing on trajectory points with low prediction probability (i.e., difficult to predict). We compared focal loss with the cross-entropy loss function, and the results are presented in Tables 5-6 for the GAN-BiLSTM without FL. Tables 5 and 6 indicate that the model trained with focal loss has a \\(3.4\\%\\) increase in road point recall and a \\(2.1\\%\\) increase in accuracy compared with the model trained with cross-entropy. These improvements indicate that focal loss is more suitable for field-road classification task than cross-entropy."
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.058,
+                0.257,
+                0.486,
+                0.395
+            ],
+            "angle": 0,
+            "content": "The existing state-of-the-art (SOTA) field-road classification study (Chen et al., 2022) has processed agricultural machinery trajectory data using its original features without further feature enhancement. These models tend to be simpler and struggle to effectively capture the correlation information among various trajectory points. In contrast, our model employs time window feature extraction and Att-BiLSTM to extract spatio-temporal features from the trajectory data. Our experimental results affirm the efficacy of our approach in capturing these spatio-temporal features. It is worth noting that the feature enhancement method we employ is not limited to the model proposed in this paper but can also be applied to other field-road classification models."
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.058,
+                0.395,
+                0.486,
+                0.495
+            ],
+            "angle": 0,
+            "content": "The main limitation of our approach is that using the generated data points to solve the data distribution imbalance problem destroys the features in the original data. Merry et al. (2022) astutely observed that adding generation points to the dataset will break long lines or edges originally formed by only two vertices into lines or edges that have many vertices spaced apart according to the tolerance that is specified. Consequently, a certain degree of granularity in the original features would be sacrificed."
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.058,
+                0.495,
+                0.486,
+                0.571
+            ],
+            "angle": 0,
+            "content": "Another significant limitation is that existing models are not readily applicable in real-time scenarios, which could be essential for dynamic scheduling of agricultural machinery. The primary challenge in enhancing the model's real-time capability stems from the necessity of incorporating both preceding and subsequent trajectory points, a requirement imposed by both BiLSTM and the time window."
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.058,
+                0.571,
+                0.486,
+                0.646
+            ],
+            "angle": 0,
+            "content": "Several strategies to mitigate data imbalance include upsampling and downsampling. The efficacy of these data augmentation techniques deserves further exploration. A comprehensive solution for field-road classification necessitates the generation of a substantial volume of trajectory points, thus calling for large-scale nonparametric data augmentation methods."
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.058,
+                0.646,
+                0.486,
+                0.76
+            ],
+            "angle": 0,
+            "content": "Accurate field-road classification not only unveils the spatiotemporal evolution patterns within agricultural machinery trajectories and the underlying factors influencing agricultural cultivation and harvesting, but it also holds vital and immediate applications across various scenarios. Immediate applications involve computing the area and efficiency of agricultural machinery operations based on the classified field points (Wu et al., 2023). This information serves as a foundation for crop yield estimation and informs agricultural policy-making."
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.058,
+                0.76,
+                0.486,
+                0.873
+            ],
+            "angle": 0,
+            "content": "Several practical examples arise from the wheat harvest data collected through a system based on field-road classification. These data were utilized by the Ministry of Agriculture and Rural Affairs of China in the \"Wheat Harvest News\" column during the wheat harvest seasons of both 2022 and 2023. The system also provided real-time wheat harvest data to CCTV and was featured in the \"Morning News\", \"Nightly News\" and \"Agriculture Farmer and Rural Area\" programs. The remarkable endeavor to enhance the harvest, supported by this data, has garnered the attention of several other renowned media outlets."
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.058,
+                0.873,
+                0.486,
+                0.937
+            ],
+            "angle": 0,
+            "content": "Moreover, downstream tasks spanning various domains depend on the results of field-road classification. For example, cross-regional farming analysis directly relies on field-road classification (Li et al., 2023), thereby enhancing the efficiency of agricultural machinery operations, reducing operational costs, and ensuring food security."
+        },
+        {
+            "type": "table_caption",
+            "bbox": [
+                0.51,
+                0.068,
+                0.772,
+                0.089
+            ],
+            "angle": 0,
+            "content": "Table 5 The overall performance of the ablation experiment."
+        },
+        {
+            "type": "table",
+            "bbox": [
+                0.512,
+                0.089,
+                0.938,
+                0.153
+            ],
+            "angle": 0,
+            "content": "<table><tr><td>Method</td><td>Pre</td><td>Rec</td><td>F1</td><td>Acc</td></tr><tr><td>GAN-BiLSTM</td><td>0.926</td><td>0.917</td><td>0.921</td><td>0.923</td></tr><tr><td>GAN-BiLSTM w/o GAN</td><td>0.897</td><td>0.873</td><td>0.880</td><td>0.886</td></tr><tr><td>GAN-BiLSTM Balanced</td><td>0.893</td><td>0.893</td><td>0.893</td><td>0.893</td></tr><tr><td>GAN-BiLSTM w/o FL</td><td>0.907</td><td>0.895</td><td>0.899</td><td>0.902</td></tr></table>"
+        },
+        {
+            "type": "table_footnote",
+            "bbox": [
+                0.511,
+                0.155,
+                0.655,
+                0.166
+            ],
+            "angle": 0,
+            "content": "w/o: without; FL: focal loss."
+        },
+        {
+            "type": "table_caption",
+            "bbox": [
+                0.511,
+                0.183,
+                0.81,
+                0.204
+            ],
+            "angle": 0,
+            "content": "Table 6 The performances of ablation experiment on two categories."
+        },
+        {
+            "type": "table",
+            "bbox": [
+                0.512,
+                0.204,
+                0.938,
+                0.284
+            ],
+            "angle": 0,
+            "content": "<table><tr><td rowspan=\"2\">Method</td><td colspan=\"2\">Field</td><td colspan=\"2\">Road</td></tr><tr><td>Pre</td><td>Rec</td><td>Pre</td><td>Rec</td></tr><tr><td>GAN-BiLSTM</td><td>0.912</td><td>0.958</td><td>0.940</td><td>0.876</td></tr><tr><td>GAN-BiLSTM w/o GAN</td><td>0.860</td><td>0.960</td><td>0.934</td><td>0.785</td></tr><tr><td>GAN-BiLSTM Balanced</td><td>0.884</td><td>0.900</td><td>0.902</td><td>0.886</td></tr><tr><td>GAN-BiLSTM w/o FL</td><td>0.889</td><td>0.948</td><td>0.924</td><td>0.842</td></tr></table>"
+        },
+        {
+            "type": "title",
+            "bbox": [
+                0.51,
+                0.314,
+                0.613,
+                0.326
+            ],
+            "angle": 0,
+            "content": "5. Conclusions"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.509,
+                0.339,
+                0.938,
+                0.483
+            ],
+            "angle": 0,
+            "content": "Field-road classification is the basis for the efficient management of agricultural machinery. In this paper, we propose the GAN-BiLSTM, a framework for field-road classification based on deep neural networks. To address the data imbalance problem in field-road classification, we use a GAN network to learn the distribution of trajectory points and generate a balanced dataset. Bi-directional information transfer with long and short-term memory capabilities enables the better learning of the spatio-temporal relationships of trajectories. The attention mechanism is introduced to automatically focus on critical trajectory points and mitigate the effect of noise in the trajectory. We use focal loss to train the model, improving the classification of hard-to-classify points."
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.509,
+                0.483,
+                0.939,
+                0.574
+            ],
+            "angle": 0,
+            "content": "Future work includes but is not limited to combining other deep neural network models, such as variational autoencoders (Kingma et al., 2019) and transformer (Vaswani et al., 2017), and verify their advantages over the current design. In addition, we will test the robustness of GAN-BiLSTM for field-road classification on datasets of different ranges and sizes, facilitating the assessment of its applicability in a broad range of real-world scenarios."
+        },
+        {
+            "type": "title",
+            "bbox": [
+                0.51,
+                0.587,
+                0.789,
+                0.6
+            ],
+            "angle": 0,
+            "content": "CRediT authorship contribution statement"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.509,
+                0.612,
+                0.938,
+                0.704
+            ],
+            "angle": 0,
+            "content": "Weixin Zhai: Conceptualization, Validation, Writing - review & editing, Supervision. Guozhao Mo: Methodology, Software, Writing - original draft. Yuzhen Xiao: Formal analysis, Writing - review & editing, Visualization. Xiya Xiong: Investigation, Writing - original draft. Caicong Wu: Data curation. Xiaoqiang Zhang: Investigation. Zhi Xu: Validation. Jiawen Pan: Resources, Writing - review & editing, Project administration."
+        },
+        {
+            "type": "title",
+            "bbox": [
+                0.51,
+                0.716,
+                0.733,
+                0.73
+            ],
+            "angle": 0,
+            "content": "Declaration of competing interest"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.509,
+                0.742,
+                0.938,
+                0.781
+            ],
+            "angle": 0,
+            "content": "The authors declare that they have no known competing financial interests or personal relationships that could have appeared to influence the work reported in this paper."
+        },
+        {
+            "type": "title",
+            "bbox": [
+                0.51,
+                0.793,
+                0.624,
+                0.807
+            ],
+            "angle": 0,
+            "content": "Data availability"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.53,
+                0.819,
+                0.797,
+                0.831
+            ],
+            "angle": 0,
+            "content": "The data that has been used is confidential."
+        },
+        {
+            "type": "title",
+            "bbox": [
+                0.51,
+                0.845,
+                0.634,
+                0.858
+            ],
+            "angle": 0,
+            "content": "Acknowledgments"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.509,
+                0.871,
+                0.938,
+                0.934
+            ],
+            "angle": 0,
+            "content": "This research was financially supported by the National Natural Science Foundation of China (32301691), the National Key R&D Program of China and Shandong Province, China (2021YFB3901300) and the National Precision Agriculture Application Project, China (Grant/ Contract number: JZNYYY001)."
+        },
+        {
+            "type": "page_number",
+            "bbox": [
+                0.495,
+                0.952,
+                0.505,
+                0.961
+            ],
+            "angle": 0,
+            "content": "9"
+        }
+    ],
+    [
+        {
+            "type": "header",
+            "bbox": [
+                0.06,
+                0.044,
+                0.129,
+                0.053
+            ],
+            "angle": 0,
+            "content": "W. Zhai et al."
+        },
+        {
+            "type": "header",
+            "bbox": [
+                0.657,
+                0.044,
+                0.94,
+                0.054
+            ],
+            "angle": 0,
+            "content": "Computers and Electronics in Agriculture 216 (2024) 108457"
+        },
+        {
+            "type": "title",
+            "bbox": [
+                0.06,
+                0.068,
+                0.133,
+                0.079
+            ],
+            "angle": 0,
+            "content": "References"
+        },
+        {
+            "type": "ref_text",
+            "bbox": [
+                0.06,
+                0.093,
+                0.486,
+                0.125
+            ],
+            "angle": 0,
+            "content": "Bereznicka, J., Wicki, L., 2021. Do operating subsidies increase labour productivity in polish farms?. Stud. Agric. Econ. 123 (3), 114-121. http://dx.doi.org/10.7896/j.2201."
+        },
+        {
+            "type": "ref_text",
+            "bbox": [
+                0.061,
+                0.127,
+                0.485,
+                0.158
+            ],
+            "angle": 0,
+            "content": "Bochts, D.D., Sorensen, C.G., Busato, P., 2014. Advances in agricultural machinery management: A review. Biosyst. Eng. 126, 69-81. http://dx.doi.org/10.1016/j.biosystemseng.2014.07.012."
+        },
+        {
+            "type": "ref_text",
+            "bbox": [
+                0.061,
+                0.159,
+                0.485,
+                0.19
+            ],
+            "angle": 0,
+            "content": "Cao, M., Tang, F., Ji, P., Ma, F., 2022. Improved real-time semantic segmentation network model for crop vision navigation line detection. Front. Plant Sci. 13, http://dx.doi.org/10.3389/fpls.2022.898131."
+        },
+        {
+            "type": "ref_text",
+            "bbox": [
+                0.061,
+                0.191,
+                0.485,
+                0.233
+            ],
+            "angle": 0,
+            "content": "Chen, Y., Li, G., Zhang, X., Jia, J., Zhou, K., Wu, C., 2022. Identifying field and road modes of agricultural machinery based on GNSS recordings: A graph convolutional neural network approach. Comput. Electron. Agric. 198, 107082. http://dx.doi.org/10.1016/j.compag.2022.107082."
+        },
+        {
+            "type": "ref_text",
+            "bbox": [
+                0.061,
+                0.235,
+                0.485,
+                0.276
+            ],
+            "angle": 0,
+            "content": "Chen, J., Qiang, H., Wu, J., Xu, G., Wang, Z., Liu, X., 2020. Extracting the navigation path of atomato-cucumbergreenhouse robot based on a median point hough transform. Comput. Electron. Agric. 174, 105472. http://dx.doi.org/10.1016/j.compag.2020.105472."
+        },
+        {
+            "type": "ref_text",
+            "bbox": [
+                0.061,
+                0.277,
+                0.485,
+                0.31
+            ],
+            "angle": 0,
+            "content": "Chen, Y., Zhang, X., Wu, C., Li, G., 2021. Field-road trajectory segmentation for agricultural machinery based on direction distribution. Comput. Electron. Agric. 186, 106180. http://dx.doi.org/10.1016/j.compag.2021.106180."
+        },
+        {
+            "type": "ref_text",
+            "bbox": [
+                0.061,
+                0.311,
+                0.485,
+                0.342
+            ],
+            "angle": 0,
+            "content": "Damanauskas, V., Janulevicius, A., Pupinis, G., 2015. Influence of extra weight and tire pressure on fuel consumption at normal tractor slippage. J. Agric. Sci. 7 (2), 55-67. http://dx.doi.org/10.5539/jas.v7n2p55."
+        },
+        {
+            "type": "ref_text",
+            "bbox": [
+                0.061,
+                0.343,
+                0.485,
+                0.373
+            ],
+            "angle": 0,
+            "content": "De Boer, P.-T., Kroese, D.P., Mannor, S., Rubinstein, R.Y., 2005. A tutorial on the cross-entropy method. Ann. Oper. Res. 134, 19-67. http://dx.doi.org/10.1007/s10479-005-5724-z."
+        },
+        {
+            "type": "ref_text",
+            "bbox": [
+                0.061,
+                0.375,
+                0.485,
+                0.406
+            ],
+            "angle": 0,
+            "content": "Fengzhao, Z., Ruihua, L., Yude, N., Ying, W., 2018. Dynamic positioning accuracy test and analysis of BeiDou satellite navigation system. GNSS World of China 43 (1), 43-48. http://dx.doi.org/10.13442/j.gnss.1008-9268.2018.01.008."
+        },
+        {
+            "type": "ref_text",
+            "bbox": [
+                0.061,
+                0.407,
+                0.485,
+                0.438
+            ],
+            "angle": 0,
+            "content": "Goodfellow, I., Pouget-Abadie, J., Mirza, M., Xu, B., Warde-Farley, D., Ozair, S., Courville, A., Bengio, Y., 2020. Generative adversarial networks. Commun. ACM 63 (11), 139-144. http://dx.doi.org/10.1145/3422622."
+        },
+        {
+            "type": "ref_text",
+            "bbox": [
+                0.061,
+                0.44,
+                0.485,
+                0.481
+            ],
+            "angle": 0,
+            "content": "Graves, A., Fernández, S., Gomez, F., Schmidhuber, J., 2006. Connectionist temporal classification: Labelling unsegmented sequence data with recurrent neural networks. In: Proceedings of the 23rd International Conference on Machine Learning. pp. 369-376. http://dx.doi.org/10.1145/1143844.1143891."
+        },
+        {
+            "type": "ref_text",
+            "bbox": [
+                0.061,
+                0.483,
+                0.485,
+                0.514
+            ],
+            "angle": 0,
+            "content": "Graves, A., Schmidhuber, J., 2005. Framework phoneme classification with bidirectional LSTM and other neural network architectures. Neural Netw. 18 (5), 602-610. http://dx.doi.org/10.1016/j.neunet.2005.06.042."
+        },
+        {
+            "type": "ref_text",
+            "bbox": [
+                0.061,
+                0.515,
+                0.485,
+                0.547
+            ],
+            "angle": 0,
+            "content": "Gulrajani, I., Ahmed, F., Arjovsky, M., Dumoulin, V., Courville, A.C., 2017. Improved training of wasserstein GANs. In: Advances in Neural Information Processing Systems, Vol. 30. http://dx.doi.org/10.48550/arXiv.1704.00028."
+        },
+        {
+            "type": "ref_text",
+            "bbox": [
+                0.061,
+                0.548,
+                0.485,
+                0.568
+            ],
+            "angle": 0,
+            "content": "Hochreiter, S., Schmidhuber, J., 1997. Long short-term memory. Neural Comput. 9 (8), 1735-1780. http://dx.doi.org/10.1162/neco.1997.9.8.1735."
+        },
+        {
+            "type": "ref_text",
+            "bbox": [
+                0.061,
+                0.569,
+                0.485,
+                0.601
+            ],
+            "angle": 0,
+            "content": "Karaim, M., Elsheikh, M., Noureldin, A., 2018. GNSS error sources. In: Rustamov, R.B., Hashimov, A.M. (Eds.), Multifunctional Operation and Application of GPS. IntechOpen, Rijeka, http://dx.doi.org/10.5772/intechopen.75493."
+        },
+        {
+            "type": "ref_text",
+            "bbox": [
+                0.061,
+                0.602,
+                0.485,
+                0.643
+            ],
+            "angle": 0,
+            "content": "Kingma, D.P., Ba, J., 2015. Adam: A method for stochastic optimization. In: 3rd International Conference on Learning Representations, ICLR 2015, San Diego, CA, USA, May 7-9, 2015, Conference Track Proceedings. http://dx.doi.org/10.48550/arXiv.1412.6980, arXiv preprint arXiv:1412.6980."
+        },
+        {
+            "type": "ref_text",
+            "bbox": [
+                0.061,
+                0.645,
+                0.485,
+                0.676
+            ],
+            "angle": 0,
+            "content": "Kingma, D.P., Welling, M., et al., 2019. An introduction to variational autoencoders. Found. Trends® Mach. Learn. 12 (4), 307-392. http://dx.doi.org/10.1561/2200000056."
+        },
+        {
+            "type": "ref_text",
+            "bbox": [
+                0.061,
+                0.677,
+                0.485,
+                0.697
+            ],
+            "angle": 0,
+            "content": "Kotsiantis, S.B., 2013. Decision trees: a recent overview. Artif. Intell. Rev. 39, 261-283. http://dx.doi.org/10.1007/s10462-011-9272-4."
+        },
+        {
+            "type": "ref_text",
+            "bbox": [
+                0.061,
+                0.698,
+                0.485,
+                0.73
+            ],
+            "angle": 0,
+            "content": "Lacour, S., Burgun, C., Perilhon, C., Descombes, G., Doyen, V., 2014. A model to assess tractor operational efficiency from bench test data. J. Terramech. 54, 1-18. http://dx.doi.org/10.1016/j.jterra.2014.04.001."
+        },
+        {
+            "type": "ref_text",
+            "bbox": [
+                0.061,
+                0.731,
+                0.485,
+                0.773
+            ],
+            "angle": 0,
+            "content": "Li, D., Liu, X., Zhou, K., Sun, R., Wang, C., Zhai, W., Wu, C., 2023. Discovering spatiotemporal characteristics of the trans-regional harvesting operation using big data of GNSS trajectories in China. Comput. Electron. Agric. 211, 108003. http://dx.doi.org/10.1016/j.compag.2023.108003."
+        },
+        {
+            "type": "list",
+            "bbox": [
+                0.06,
+                0.093,
+                0.486,
+                0.773
+            ],
+            "angle": 0,
+            "content": null
+        },
+        {
+            "type": "ref_text",
+            "bbox": [
+                0.513,
+                0.068,
+                0.938,
+                0.101
+            ],
+            "angle": 0,
+            "content": "Lin, T.-Y., Goyal, P., Girshick, R., He, K., Dollar, P., 2020. Focal loss for dense object detection. IEEE Trans. Pattern Anal. Mach. Intell. 42 (2), 318-327. http://dx.doi.org/10.1109/TPAMI.2018.2858826."
+        },
+        {
+            "type": "ref_text",
+            "bbox": [
+                0.513,
+                0.102,
+                0.938,
+                0.143
+            ],
+            "angle": 0,
+            "content": "Lin, Z., Khetan, A., Fanti, G., Oh, S., 2018. PacGAN: The power of two samples in generative adversarial networks. In: Advances in Neural Information Processing Systems, Vol. 31. Curran Associates, Inc., http://dx.doi.org/10.48550/arXiv.1712.04086."
+        },
+        {
+            "type": "ref_text",
+            "bbox": [
+                0.513,
+                0.145,
+                0.938,
+                0.187
+            ],
+            "angle": 0,
+            "content": "Liu, Y., Shi, L., Gao, Y., Kou, C., Yang, S., et al., 2022. Research on the optimized management of agricultural machinery allocation path based on teaching and learning optimization algorithm. Tehnički Vjesnik 29 (2), 456-463. http://dx.doi.org/10.17559/TV-20211025142723."
+        },
+        {
+            "type": "ref_text",
+            "bbox": [
+                0.513,
+                0.189,
+                0.938,
+                0.209
+            ],
+            "angle": 0,
+            "content": "Merry, K., Bettinger, P., Crosby, M., Boston, K., 2022. Geographic Information System Skills for Foresters and Natural Resource Managers. Elsevier."
+        },
+        {
+            "type": "ref_text",
+            "bbox": [
+                0.513,
+                0.211,
+                0.938,
+                0.274
+            ],
+            "angle": 0,
+            "content": "Paszke, A., Gross, S., Massa, F., Lerer, A., Bradbury, J., Chanan, G., Killeen, T., Lin, Z., Gimelshein, N., Antiga, L., Desmaison, A., Kopf, A., Yang, E., DeVito, Z., Raison, M., Tejani, A., Chilamkurthy, S., Steiner, B., Fang, L., Bai, J., Chintala, S., 2019. Pytorch: An imperative style, high-performance deep learning library. In: Advances in Neural Information Processing Systems, Vol. 32. Curran Associates, Inc., http://dx.doi.org/10.48550/arXiv.1912.01703."
+        },
+        {
+            "type": "ref_text",
+            "bbox": [
+                0.513,
+                0.275,
+                0.938,
+                0.307
+            ],
+            "angle": 0,
+            "content": "Poteko, J., Eder, D., Noack, P.O., 2021. Identifying operation modes of agricultural vehicles based on GNSS measurements. Comput. Electron. Agric. 185, 106105. http://dx.doi.org/10.1016/j.compag.2021.106105."
+        },
+        {
+            "type": "ref_text",
+            "bbox": [
+                0.513,
+                0.308,
+                0.938,
+                0.359
+            ],
+            "angle": 0,
+            "content": "Salimans, T., Goodfellow, I., Zaremba, W., Cheung, V., Radford, A., Chen, X., 2016. Improved techniques for training GANs. In: Proceedings of the 30th International Conference on Neural Information Processing Systems. NIPS '16, Curran Associates Inc., Red Hook, NY, USA, pp. 2234-2242. http://dx.doi.org/10.48550/arXiv.1606.03498."
+        },
+        {
+            "type": "ref_text",
+            "bbox": [
+                0.513,
+                0.361,
+                0.938,
+                0.415
+            ],
+            "angle": 0,
+            "content": "Song, X.-P., Potapov, P.V., Krylov, A., King, L., Di Bella, C.M., Hudson, A., Khan, A., Adusei, B., Stehman, S.V., Hansen, M.C., 2017. National-scale soybean mapping and area estimation in the United States using medium resolution satellite imagery and field survey. Remote Sens. Environ. 190, 383-395. http://dx.doi.org/10.1016/j.rse.2017.01.008."
+        },
+        {
+            "type": "ref_text",
+            "bbox": [
+                0.513,
+                0.416,
+                0.938,
+                0.458
+            ],
+            "angle": 0,
+            "content": "Song, X., Wu, F., Lu, X., Yang, T., Ju, C., Sun, C., Liu, T., 2022. The classification of farming progress in rice-wheat rotation fields based on UAV RGB images and the regional mean model. Agriculture 12 (2), 124. http://dx.doi.org/10.3390/agriculture12020124."
+        },
+        {
+            "type": "ref_text",
+            "bbox": [
+                0.513,
+                0.459,
+                0.938,
+                0.49
+            ],
+            "angle": 0,
+            "content": "Spononer, P., 2015. Minor rural road networks: values, challenges, and opportunities for biodiversity conservation. Nat. Conserv. 11, 129-142. http://dx.doi.org/10.3897/natureconservation.11.4434."
+        },
+        {
+            "type": "ref_text",
+            "bbox": [
+                0.513,
+                0.491,
+                0.938,
+                0.533
+            ],
+            "angle": 0,
+            "content": "Sujatha, R., Isakki, P., 2016. A study on crop yield forecasting using classification techniques. In: 2016 International Conference on Computing Technologies and Intelligent Data Engineering (ICCTIDE'16). pp. 1-4. http://dx.doi.org/10.1109/ICCTIDE.2016.7725357."
+        },
+        {
+            "type": "ref_text",
+            "bbox": [
+                0.513,
+                0.534,
+                0.938,
+                0.566
+            ],
+            "angle": 0,
+            "content": "Thabtah, F., Hammoud, S., Kamalov, F., Gonsalves, A., 2020. Data imbalance in classification: Experimental evaluation. Inform. Sci. 513, 429-441. http://dx.doi.org/10.1016/j.ins.2019.11.004."
+        },
+        {
+            "type": "ref_text",
+            "bbox": [
+                0.513,
+                0.567,
+                0.938,
+                0.598
+            ],
+            "angle": 0,
+            "content": "Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A.N., Kaiser, L., Polosukhin, I., 2017. Attention is all you need. In: Advances in Neural Information Processing Systems, Vol. 30. http://dx.doi.org/10.48550/arXiv.1706.03762."
+        },
+        {
+            "type": "ref_text",
+            "bbox": [
+                0.513,
+                0.599,
+                0.938,
+                0.631
+            ],
+            "angle": 0,
+            "content": "Wu, C., Li, D., Zhang, X., Pan, J., Quan, L., Yang, L., Yang, W., Ma, Q., Su, C., Zhai, W., 2023. China's agricultural machinery operation big data system. Comput. Electron. Agric. 205, 107594. http://dx.doi.org/10.1016/j.compag.2022.107594."
+        },
+        {
+            "type": "ref_text",
+            "bbox": [
+                0.513,
+                0.632,
+                0.938,
+                0.663
+            ],
+            "angle": 0,
+            "content": "Xu, L., Skoularidou, M., Cuesta-Infante, A., Veeramachaneni, K., 2019. Modeling tabular data using conditional gan. In: Advances in Neural Information Processing Systems, Vol. 32. Curran Associates, Inc., http://dx.doi.org/10.48550/arXiv.1907.00503."
+        },
+        {
+            "type": "ref_text",
+            "bbox": [
+                0.513,
+                0.664,
+                0.938,
+                0.695
+            ],
+            "angle": 0,
+            "content": "Yu, Y., Si, X., Hu, C., Zhang, J., 2019. A review of recurrent neural networks: LSTM cells and network architectures. Neural Comput. 31 (7), 1235-1270. http://dx.doi.org/10.1162/neco_a_01199."
+        },
+        {
+            "type": "ref_text",
+            "bbox": [
+                0.513,
+                0.696,
+                0.938,
+                0.738
+            ],
+            "angle": 0,
+            "content": "Yu, B., Yin, H., Zhu, Z., 2017. Spatio-temporal graph convolutional networks: A deep learning framework for traffic forecasting. In: Proceedings of the Twenty-Seventh International Joint Conference on Artificial Intelligence, IJCAI-18. pp. 3634-3640. http://dx.doi.org/10.24963/ijcai.2018/505."
+        },
+        {
+            "type": "ref_text",
+            "bbox": [
+                0.513,
+                0.739,
+                0.938,
+                0.782
+            ],
+            "angle": 0,
+            "content": "Yu, J., Zhang, J., Shu, A., Chen, Y., Chen, J., Yang, Y., Tang, W., Zhang, Y., 2023. Study of convolutional neural network-based semantic segmentation methods on edge intelligence devices for field agricultural robot navigation line extraction. Comput. Electron. Agric. 209, 107811. http://dx.doi.org/10.1016/j.compag.2023.107811."
+        },
+        {
+            "type": "list",
+            "bbox": [
+                0.513,
+                0.068,
+                0.938,
+                0.782
+            ],
+            "angle": 0,
+            "content": null
+        },
+        {
+            "type": "page_number",
+            "bbox": [
+                0.494,
+                0.953,
+                0.508,
+                0.961
+            ],
+            "angle": 0,
+            "content": "10"
+        }
+    ]
+]

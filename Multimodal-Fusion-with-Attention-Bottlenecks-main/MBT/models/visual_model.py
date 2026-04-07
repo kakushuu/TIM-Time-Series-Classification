@@ -2,9 +2,10 @@ import torch
 import torch.nn as nn
 import timm
 from models.pet_modules import VanillaEncoder, AdaptFormer
+from models.patch_encoder import PatchEncoder
 
-TRAJ_DIM = 6   # 经度, 纬度, 间距(米), 深度, 速度, 方向角
-TRAJ_SEQ = 8   # sliding-window length (frames)
+TRAJ_DIM = 27   # 27 维特征（仿照 GAN-BiLSTM: 2 经纬度 + 5 运动 × 5 统计量）
+TRAJ_SEQ = 512  # sliding-window length (frames) - 仿照 GAN-BiLSTM
 BILSTM_HIDDEN = 384  # hidden per direction; 384*2 = 768 matches ViT dim
 
 
@@ -14,31 +15,96 @@ class AVmodel(nn.Module):
 
     Modes:
       - 'multimodal':      Full MBT with cross-modal attention (trajectory + image)
-      - 'trajectory_only': BiLSTM trajectory encoder → MLP classifier (no image)
+      - 'trajectory_only': BiLSTM or PatchTST trajectory encoder → MLP classifier
       - 'image_only':      ViT image encoder → classifier (no trajectory)
 
-    Trajectory branch uses an Attention-BiLSTM encoder that takes a sequence of
-    TRAJ_SEQ frames (bs, T, 6) and produces a single 768-dim cls token, matching
-    the ViT token dimension so the MBT cross-modal attention is unchanged.
+    traj_arch:
+      - 'bilstm':    Attention-BiLSTM encoder (default, Bug A1 fixed)
+      - 'patchtst':  PatchTST-style patch Transformer encoder (B1)
     """
-    def __init__(self, num_classes, num_latents, dim, mode='multimodal'):
+    def __init__(self, num_classes, num_latents, dim, mode='multimodal', traj_arch='bilstm',
+                 bilstm_hidden=384, bilstm_layers=2):
         super(AVmodel, self).__init__()
         self.mode = mode
+        self.traj_arch = traj_arch
+        self.bilstm_hidden = bilstm_hidden
+        self.bilstm_layers = bilstm_layers
 
-        # ── Common: BiLSTM trajectory encoder ────────────────────────────────────
-        # Replaces the previous single-frame Linear projection.
-        # Input:  (bs, T, 6)  →  Output: (bs, T+1, 768)  [cls + T hidden states]
-        self.traj_bilstm = nn.LSTM(
-            input_size=TRAJ_DIM,
-            hidden_size=BILSTM_HIDDEN,
-            num_layers=2,
-            bidirectional=True,
-            batch_first=True,
-            dropout=0.3,
-        )
-        self.traj_attn_w    = nn.Linear(768, 1)          # attention scoring
-        self.traj_cls_token = nn.Parameter(torch.zeros(1, 1, 768))
-        self.traj_layernorm = nn.LayerNorm(768)
+        # ── Trajectory encoder (shared across modes) ──────────────────────────────
+        if traj_arch == 'bilstm':
+            # BiLSTM + attention pooling (Bug A1 fixed)
+            self.traj_bilstm = nn.LSTM(
+                input_size=TRAJ_DIM,
+                hidden_size=bilstm_hidden,
+                num_layers=bilstm_layers,
+                bidirectional=True,
+                batch_first=True,
+                dropout=0.3,
+            )
+            # Attention pooling layer
+            bilstm_output_dim = bilstm_hidden * 2  # BiLSTM bidirectional doubles hidden size
+            self.traj_attn_w    = nn.Linear(bilstm_output_dim, 1)
+            self.traj_cls_token = nn.Parameter(torch.zeros(1, 1, bilstm_output_dim))
+            self.traj_layernorm = nn.LayerNorm(bilstm_output_dim)
+        elif traj_arch == 'hierarchical_bilstm':
+            # Hierarchical BiLSTM: short-term (all frames) + long-term (downsampled)
+            # Short-term: captures fast motion patterns
+            self.traj_bilstm_short = nn.LSTM(
+                input_size=TRAJ_DIM,
+                hidden_size=BILSTM_HIDDEN,
+                num_layers=2,
+                bidirectional=True,
+                batch_first=True,
+                dropout=0.3,
+            )
+            # Long-term: captures global trajectory shape (every 10th frame)
+            self.traj_bilstm_long = nn.LSTM(
+                input_size=TRAJ_DIM,
+                hidden_size=BILSTM_HIDDEN,
+                num_layers=2,
+                bidirectional=True,
+                batch_first=True,
+                dropout=0.3,
+            )
+            # Attention pooling for both scales
+            self.traj_attn_w_short = nn.Linear(768, 1)
+            self.traj_attn_w_long = nn.Linear(768, 1)
+            self.traj_layernorm_short = nn.LayerNorm(768)
+            self.traj_layernorm_long = nn.LayerNorm(768)
+            # Fusion: concat(768+768) → 768
+            self.traj_fusion = nn.Linear(768 * 2, 768)
+        elif traj_arch == 'traj_image':
+            # Trajectory-as-Image: reshape (27, 512) → CNN input
+            # Use ResNet-18 pretrained on ImageNet
+            import torchvision.models as models
+            self.traj_cnn = models.resnet18(pretrained=True)
+            # Replace first conv: normally (3, 7, 7) for RGB, we need (1, 7, 7) for single channel
+            # Or better: treat 27 features as 27 channels (like hyperspectral image)
+            self.traj_cnn.conv1 = nn.Conv2d(TRAJ_DIM, 64, kernel_size=7, stride=2, padding=3, bias=False)
+            # Replace final FC: 1000 → num_classes (will be done in _init_trajectory_only)
+            # For now, remove the FC to get 512-dim features
+            self.traj_cnn.fc = nn.Identity()  # Output: (bs, 512)
+            # Freeze early layers
+            for param in self.traj_cnn.parameters():
+                param.requires_grad = False
+            # Unfreeze last 2 blocks + conv1
+            for param in self.traj_cnn.layer4.parameters():
+                param.requires_grad = True
+            for param in self.traj_cnn.conv1.parameters():
+                param.requires_grad = True
+        elif traj_arch == 'patchtst':
+            # PatchTST: patch_size=16 → 32 tokens, 4-layer Transformer
+            self.traj_patch_enc = PatchEncoder(
+                seq_len=TRAJ_SEQ,
+                n_features=TRAJ_DIM,
+                patch_size=16,
+                d_model=768,
+                n_heads=8,
+                n_layers=4,
+                dropout=0.1,
+            )
+        else:
+            raise ValueError(f"Unknown traj_arch: {traj_arch}. Choose from: bilstm, patchtst")
 
         # ── Mode-specific initialization ─────────────────────────────────────────
         if mode == 'multimodal':
@@ -94,16 +160,26 @@ class AVmodel(nn.Module):
         self.classifier     = nn.Linear(768, num_classes)
 
     def _init_trajectory_only(self, num_classes):
-        """Trajectory-only: BiLSTM → attention pooling → MLP classifier."""
-        self.traj_encoder = nn.Sequential(
-            nn.Linear(768, 512),
-            nn.ReLU(),
-            nn.Dropout(0.3),
-            nn.Linear(512, 256),
-            nn.ReLU(),
-            nn.Dropout(0.3),
-        )
-        self.classifier = nn.Linear(256, num_classes)
+        """Trajectory-only: encoder → MLP classifier."""
+        if self.traj_arch == 'traj_image':
+            # CNN already outputs 512-dim features
+            self.traj_encoder = nn.Sequential(
+                nn.Linear(512, 256),
+                nn.ReLU(),
+                nn.Dropout(0.3),
+            )
+            self.classifier = nn.Linear(256, num_classes)
+        else:
+            # BiLSTM / hierarchical_bilstm / patchtst output bilstm_hidden*2
+            self.traj_encoder = nn.Sequential(
+                nn.Linear(self.bilstm_hidden * 2, 512),
+                nn.ReLU(),
+                nn.Dropout(0.3),
+                nn.Linear(512, 256),
+                nn.ReLU(),
+                nn.Dropout(0.3),
+            )
+            self.classifier = nn.Linear(256, num_classes)
 
     def _init_image_only(self, num_classes):
         """Image-only: ViT backbone + classifier."""
@@ -120,23 +196,58 @@ class AVmodel(nn.Module):
 
     def forward_traj_features(self, x):
         """
-        BiLSTM trajectory encoder.
+        Trajectory encoder — supports bilstm, hierarchical_bilstm, traj_image, and patchtst.
 
         Args:
-            x: (bs, T, 6)  — sequence of T normalised trajectory frames
+            x: (bs, T, 27)
         Returns:
-            (bs, T+1, 768) — [cls_token, h_1, ..., h_T]  compatible with MBT encoder
+            bilstm:              (bs, T+1, 768) — [cls_token, h_1..h_T] for MBT encoder
+            hierarchical_bilstm: (bs, 1, 768)   — single fused token (short+long concat → fusion)
+            traj_image:          (bs, 1, 512)   — CNN features (ResNet-18 output)
+            patchtst:            (bs, 1, 768)   — single pooled token (wrapped for MBT compat)
         """
         B, T, _ = x.shape
 
-        # BiLSTM: (bs, T, 6) → (bs, T, 768)
-        rnn_out, _ = self.traj_bilstm(x)          # (bs, T, 768)
-        rnn_out = self.traj_layernorm(rnn_out)
+        if self.traj_arch == 'bilstm':
+            rnn_out, _ = self.traj_bilstm(x)              # (bs, T, bilstm_hidden*2)
+            rnn_out = self.traj_layernorm(rnn_out)
+            cls = self.traj_cls_token.expand(B, -1, -1)   # (bs, 1, bilstm_hidden*2)
+            return torch.cat([cls, rnn_out], dim=1)        # (bs, T+1, bilstm_hidden*2)
 
-        # Prepend learnable cls token
-        cls = self.traj_cls_token.expand(B, -1, -1)   # (bs, 1, 768)
-        x = torch.cat([cls, rnn_out], dim=1)           # (bs, T+1, 768)
-        return x
+        elif self.traj_arch == 'hierarchical_bilstm':
+            # Short-term: all 512 frames
+            short_out, _ = self.traj_bilstm_short(x)      # (bs, 512, 768)
+            short_out = self.traj_layernorm_short(short_out)
+            short_scores = torch.softmax(self.traj_attn_w_short(short_out), dim=1)  # (bs, 512, 1)
+            short_pooled = (short_scores * short_out).sum(dim=1)  # (bs, 768)
+
+            # Long-term: downsample to every 10th frame (512 → 51 frames)
+            long_input = x[:, ::10, :]  # (bs, 51, 27)
+            long_out, _ = self.traj_bilstm_long(long_input)  # (bs, 51, 768)
+            long_out = self.traj_layernorm_long(long_out)
+            long_scores = torch.softmax(self.traj_attn_w_long(long_out), dim=1)  # (bs, 51, 1)
+            long_pooled = (long_scores * long_out).sum(dim=1)  # (bs, 768)
+
+            # Fusion
+            fused = torch.cat([short_pooled, long_pooled], dim=1)  # (bs, 1536)
+            fused = self.traj_fusion(fused)  # (bs, 768)
+            return fused.unsqueeze(1)  # (bs, 1, 768) — MBT compat
+
+        elif self.traj_arch == 'traj_image':
+            # Reshape (bs, T=512, 27) → (bs, 27, T=512) as "image"
+            x = x.permute(0, 2, 1)  # (bs, 27, 512)
+            # Add dummy spatial dimension: (bs, 27, 512) → (bs, 27, 512, 1)
+            x = x.unsqueeze(-1)  # (bs, 27, 512, 1)
+            # Interpolate to 224x224 (ResNet input size) - ensure on same device as model
+            x = x.to(self.traj_cnn.conv1.weight.device)
+            x = nn.functional.interpolate(x, size=(224, 224), mode='bilinear', align_corners=False)
+            # CNN forward pass
+            features = self.traj_cnn(x)  # (bs, 512)
+            return features.unsqueeze(1)  # (bs, 1, 512) — MBT compat
+
+        else:  # patchtst
+            out = self.traj_patch_enc(x)                   # (bs, 768)
+            return out.unsqueeze(1)                        # (bs, 1, 768) — MBT compat
 
     def forward_rgb_features(self, x):
         """x: (bs, F, 3, 224, 224) → (bs, 1+F*196, 768)"""
@@ -167,26 +278,39 @@ class AVmodel(nn.Module):
 
     # ── Main forward ──────────────────────────────────────────────────────
 
-    def forward(self, x, y):
+    def forward(self, x, y, return_cls_tokens=False):
         """
-        x: (bs, T, 6)           trajectory sequence  (T = TRAJ_SEQ frames)
+        x: (bs, T, 27)          trajectory sequence  (T = TRAJ_SEQ frames, default 512)
         y: (bs, F, 3, 224, 224) RGB frames
 
         Behavior depends on self.mode:
           - multimodal:      uses both x and y
           - trajectory_only: uses only x (y is ignored)
           - image_only:      uses only y (x is ignored)
+
+        Args:
+            return_cls_tokens: If True and mode='multimodal', returns (logits, traj_cls, rgb_cls)
+                               Otherwise returns logits only
         """
         if self.mode == 'multimodal':
             x = self.forward_traj_features(x)
             y = self.forward_rgb_features(y)
             x, y = self.forward_encoder(x, y)
             logits = self.classifier((x + y) * 0.5)
+            if return_cls_tokens:
+                return logits, x, y  # x=traj_cls, y=rgb_cls (both 768-dim)
             return logits
 
         elif self.mode == 'trajectory_only':
-            x = self.forward_traj_features(x)       # (bs, 2, 768)
-            x = x[:, 0]                              # cls token (bs, 768)
+            x = self.forward_traj_features(x)       # (bs, T+1, 768) or (bs, 1, 768) or (bs, 1, 512)
+            if self.traj_arch == 'bilstm':
+                # Attention pooling over BiLSTM hidden states (skip cls at pos 0)
+                h = x[:, 1:]                                         # (bs, T, 768)
+                scores = torch.softmax(self.traj_attn_w(h), dim=1)  # (bs, T, 1)
+                x = (scores * h).sum(dim=1)                          # (bs, 768)
+            else:
+                # PatchTST / hierarchical_bilstm / traj_image already pooled — unwrap the single token
+                x = x[:, 0]                                          # (bs, 768) or (bs, 512)
             x = self.traj_encoder(x)                 # (bs, 256)
             logits = self.classifier(x)
             return logits

@@ -13,6 +13,39 @@ from dataloader.av_data import AV_Dataset, TRAJ_COLS
 from models.visual_model import AVmodel
 
 
+# ── Contrastive Loss (InfoNCE) ───────────────────────────────────────────────
+
+def contrastive_loss(traj_cls, rgb_cls, temperature=0.07):
+    """
+    InfoNCE contrastive loss for cross-modal alignment.
+    Forces trajectory and visual CLS tokens from the same sample to be close,
+    while pushing different samples apart.
+
+    Args:
+        traj_cls: (bs, dim) trajectory CLS token embeddings
+        rgb_cls:  (bs, dim) RGB visual CLS token embeddings
+        temperature: softmax temperature (default 0.07)
+
+    Returns:
+        scalar loss
+    """
+    # Normalize to unit sphere
+    traj_cls = nn.functional.normalize(traj_cls, dim=1)
+    rgb_cls = nn.functional.normalize(rgb_cls, dim=1)
+
+    # Similarity matrix: (bs, bs)
+    sim = torch.matmul(traj_cls, rgb_cls.t()) / temperature
+
+    # Labels: diagonal is positive (i matches i)
+    labels = torch.arange(sim.size(0), device=sim.device)
+
+    # Cross-entropy: for each traj, the correct rgb is on the diagonal
+    loss_traj_to_rgb = nn.functional.cross_entropy(sim, labels)
+    loss_rgb_to_traj = nn.functional.cross_entropy(sim.t(), labels)
+
+    return (loss_traj_to_rgb + loss_rgb_to_traj) / 2.0
+
+
 def parse_options():
     parser = argparse.ArgumentParser(description="Multimodal Bottleneck Attention — Trajectory + Video")
 
@@ -27,13 +60,31 @@ def parse_options():
     parser.add_argument('--mode',         type=str, default='multimodal',
                         choices=['multimodal', 'trajectory_only', 'image_only'],
                         help='Experiment mode: multimodal (traj+img), trajectory_only, image_only')
+    parser.add_argument('--traj_arch',    type=str, default='bilstm',
+                        choices=['bilstm', 'patchtst', 'hierarchical_bilstm', 'traj_image'],
+                        help='Trajectory encoder: bilstm, patchtst, hierarchical_bilstm, or traj_image (CNN)')
+    parser.add_argument('--bilstm_hidden',  type=int, default=384,
+                        help='BiLSTM hidden size per direction (default 384)')
+    parser.add_argument('--bilstm_layers',  type=int, default=2,
+                        help='Number of BiLSTM layers (default 2)')
+    parser.add_argument('--loss_type',    type=str, default='weighted_ce',
+                        choices=['weighted_ce', 'focal'],
+                        help='Loss function: weighted_ce (class-weighted CE) or focal (focal loss)')
+    parser.add_argument('--focal_gamma',  type=float, default=2.0,
+                        help='Gamma parameter for focal loss (default 2.0)')
     parser.add_argument('--adapter_dim',  type=int, default=8,  help='AdaptFormer bottleneck dim')
     parser.add_argument('--num_latent',   type=int, default=4,  help='MBT latent tokens')
     parser.add_argument('--num_classes',  type=int, default=11, help='number of activity classes')
 
+    # Contrastive learning (multimodal only)
+    parser.add_argument('--contrastive_weight', type=float, default=0.0,
+                        help='Weight for cross-modal contrastive loss (0.0 = disabled, try 0.1)')
+    parser.add_argument('--contrastive_temp', type=float, default=0.07,
+                        help='Temperature for InfoNCE loss (default 0.07)')
+
     # Data
-    parser.add_argument('--csv_file',  type=str, default='../../data/aligned_output/aligned_data.csv',
-                        help='path to aligned_data.csv')
+    parser.add_argument('--csv_file',  type=str, default='../../data/aligned_output/B-2024-10-19/aligned_data_27features.csv',
+                        help='path to aligned_data_27features.csv (27-dim features)')
     parser.add_argument('--data_dir',  type=str, default='../../',
                         help='base directory prepended to frame_path column')
     parser.add_argument('--test_size', type=float, default=0.2,
@@ -49,8 +100,11 @@ def parse_options():
 
 # ── Training / Validation loops ───────────────────────────────────────────────
 
-def train_one_epoch(loader, model, optimizer, loss_fn, device):
+def train_one_epoch(loader, model, optimizer, loss_fn, device,
+                    contrastive_weight=0.0, contrastive_temp=0.07):
     epoch_loss, correct, total = [], 0, 0
+    use_contrastive = (contrastive_weight > 0 and hasattr(model, 'mode') and model.mode == 'multimodal')
+
     model.train()
     for traj, imgs, labels in loader:
         traj   = traj.to(device)
@@ -58,9 +112,20 @@ def train_one_epoch(loader, model, optimizer, loss_fn, device):
         labels = labels.to(device)
 
         optimizer.zero_grad()
-        preds = model(traj, imgs)
-        loss  = loss_fn(preds, labels)
+
+        # Forward pass — if contrastive enabled, get CLS tokens
+        if use_contrastive:
+            preds, traj_cls, rgb_cls = model(traj, imgs, return_cls_tokens=True)
+            ce_loss = loss_fn(preds, labels)
+            contra_loss = contrastive_loss(traj_cls, rgb_cls, temperature=contrastive_temp)
+            loss = ce_loss + contrastive_weight * contra_loss
+        else:
+            preds = model(traj, imgs)
+            loss  = loss_fn(preds, labels)
+
         loss.backward()
+        # Gradient clipping to prevent explosion with Focal Loss
+        torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
         optimizer.step()
 
         epoch_loss.append(loss.item())
@@ -193,10 +258,15 @@ def train_test(args):
     traj_mean = traj_vals.mean(axis=0)
     traj_std  = traj_vals.std(axis=0) + 1e-6
 
+    # For trajectory_only mode, skip loading images to speed up data loading
+    load_images = (args.mode != 'trajectory_only')
+
     train_dataset = AV_Dataset(train_df, data_dir=args.data_dir,
-                                traj_mean=traj_mean, traj_std=traj_std)
+                                traj_mean=traj_mean, traj_std=traj_std,
+                                load_images=load_images)
     test_dataset  = AV_Dataset(test_df,  data_dir=args.data_dir,
-                                traj_mean=traj_mean, traj_std=traj_std)
+                                traj_mean=traj_mean, traj_std=traj_std,
+                                load_images=load_images)
 
     trainloader = DataLoader(train_dataset, batch_size=args.batch_size,
                              shuffle=True,  num_workers=0)
@@ -208,14 +278,49 @@ def train_test(args):
     model = AVmodel(num_classes=args.num_classes,
                     num_latents=args.num_latent,
                     dim=args.adapter_dim,
-                    mode=args.mode)
+                    mode=args.mode,
+                    traj_arch=args.traj_arch,
+                    bilstm_hidden=args.bilstm_hidden,
+                    bilstm_layers=args.bilstm_layers)
     model.to(args.device)
     print(f"\t Model loaded (mode={args.mode})")
     print('\t Trainable params =',
           sum(p.numel() for p in model.parameters() if p.requires_grad))
 
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
-    loss_fn   = nn.CrossEntropyLoss()
+
+    # Loss function (class-weighted CE or focal loss)
+    from sklearn.utils.class_weight import compute_class_weight
+    train_labels = train_df['分类'].values
+    classes = np.arange(args.num_classes)
+    weights = compute_class_weight('balanced', classes=classes, y=train_labels)
+    class_weights = torch.FloatTensor(weights).to(args.device)
+
+    if args.loss_type == 'focal':
+        class FocalLoss(nn.Module):
+            def __init__(self, alpha, gamma=2.0):
+                super().__init__()
+                self.alpha = alpha
+                self.gamma = gamma
+                self.ce = nn.CrossEntropyLoss(weight=alpha, reduction='none')
+
+            def forward(self, logits, targets):
+                ce_loss = self.ce(logits, targets)
+                # Clamp ce_loss to prevent numerical issues
+                ce_loss = torch.clamp(ce_loss, min=1e-8, max=100.0)
+                pt = torch.exp(-ce_loss)
+                # Clamp pt to prevent numerical issues
+                pt = torch.clamp(pt, min=1e-8, max=1.0)
+                focal_weight = (1 - pt) ** self.gamma
+                focal_loss = focal_weight * ce_loss
+                return focal_loss.mean()
+
+        loss_fn = FocalLoss(alpha=class_weights, gamma=args.focal_gamma)
+        print(f"\t Loss: Focal (gamma={args.focal_gamma}, class-weighted)")
+    else:
+        loss_fn = nn.CrossEntropyLoss(weight=class_weights)
+        print(f"\t Loss: Weighted CE")
+    print(f"\t Class weights (balanced): {np.round(weights, 2)}")
 
     # ── Training loop ─────────────────────────────────────────────────────
     history = {'train_loss': [], 'train_acc': [], 'val_loss': [], 'val_acc': []}
@@ -223,7 +328,9 @@ def train_test(args):
     best_model_state = None
     print("\t Started training\n")
     for epoch in range(args.num_epochs):
-        loss,     acc     = train_one_epoch(trainloader, model, optimizer, loss_fn, args.device)
+        loss, acc = train_one_epoch(trainloader, model, optimizer, loss_fn, args.device,
+                                     contrastive_weight=args.contrastive_weight,
+                                     contrastive_temp=args.contrastive_temp)
         val_loss, val_acc = val_one_epoch(testloader, model, loss_fn, args.device)
 
         history['train_loss'].append(loss)
@@ -274,9 +381,13 @@ def train_test(args):
 
     # ── Save results ──────────────────────────────────────────────────────
     os.makedirs(args.output_dir, exist_ok=True)
-    result_file = os.path.join(args.output_dir, f'results_{args.mode}.json')
+    exp_tag = f"{args.mode}_{args.traj_arch}_{args.loss_type}"
+    result_file = os.path.join(args.output_dir, f'results_{exp_tag}.json')
+    checkpoint_tag = f"{exp_tag}_best.pth"
     results = {
         'mode': args.mode,
+        'traj_arch': args.traj_arch,
+        'loss_type': args.loss_type,
         'best_val_acc': best_val_acc,
         'final_train_acc': history['train_acc'][-1],
         'final_val_acc': history['val_acc'][-1],
@@ -295,3 +406,13 @@ def train_test(args):
 if __name__ == "__main__":
     opts = parse_options()
     train_test(args=opts)
+
+
+
+
+
+
+
+
+
+

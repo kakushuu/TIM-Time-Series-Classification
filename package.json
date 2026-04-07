@@ -1,0 +1,13 @@
+{
+  "name": "agri-mbt",
+  "version": "1.0.0",
+  "description": "TC-AdaptFormer multimodal fusion for agricultural activity recognition",
+  "scripts": {
+    "user-stories:verify": "bun run scripts/verify-user-stories.ts",
+    "ralph": "bun run scripts/ralph/runner.ts"
+  },
+  "devDependencies": {
+    "zod": "^3.22.4",
+    "typescript": "^5.3.3"
+  }
+}

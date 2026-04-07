@@ -1,0 +1,22 @@
+TC-AdaptFormer Mock 测试资源报告
+设备: cuda
+
+总参数:       89.46M
+可训练参数:   3.66M  (4.1%)
+冻结参数:     85.80M
+
+单样本推理耗时: 14.2 ms
+推理吞吐量:     70 samples/s
+
+batch_size=1: 23.2ms  43s/s  394MB
+batch_size=2: 27.2ms  74s/s  434MB
+batch_size=4: 64.1ms  62s/s  507MB
+batch_size=8: 108.4ms  74s/s  657MB
+
+测试汇总:
+  PASS  前向传播形状
+  PASS  输出无NaN
+  PASS  可训练参数3-5M
+  PASS  推理时延<200ms
+
+总体结果: ALL PASS
