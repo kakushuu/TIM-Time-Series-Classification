@@ -16,6 +16,23 @@ from models.lossFun import FocalLoss
 import utils.metrics as metrics
 
 
+class LinearWarmupScheduler:
+    def __init__(self, optimizer, warmup_steps):
+        self.optimizer = optimizer
+        self.warmup_steps = max(1, warmup_steps)
+        self.current_step = 0
+
+        for param_group in self.optimizer.param_groups:
+            param_group.setdefault('initial_lr', param_group['lr'])
+            param_group['lr'] = 0.0
+
+    def step(self):
+        self.current_step += 1
+        if self.current_step <= self.warmup_steps:
+            scale = self.current_step / self.warmup_steps
+            for param_group in self.optimizer.param_groups:
+                param_group['lr'] = param_group['initial_lr'] * scale
+
 
 class Trainer():
     def __init__(self, model):
@@ -99,7 +116,7 @@ class Trainer():
         torch.save(checkpoint, save_path)
         # print("Save model checkpoint at {}".format(save_path))
 
-    def train(self, epoch):
+    def train(self, epoch, warmup_scheduler=None):
         # start = time.strftime("%H:%M:%S")
         # lr = self.optimizer.state_dict()['param_groups'][0]['lr']
         # print("Starting epoch: %d | phase: train | ⏰: %s | Learning rate: %f" %(epoch, start, lr))
@@ -124,6 +141,8 @@ class Trainer():
             loss.backward()
             if (batch + 1) % self.accumulation_step == 0:
                 self.optimizer.step()
+                if warmup_scheduler is not None:
+                    warmup_scheduler.step()
                 self.optimizer.zero_grad()
             # tbar.set_description("Train loss: %.5f" % (total_losses / (batch + 1)))
             # lr_scheduler.step(lr_scheduler.last_epoch+1)
@@ -157,15 +176,18 @@ class Trainer():
         pbar = tqdm(total=self.max_epoch-self.start_epoch)
         lastTmet={}
         lastmet={}
+        warmup_scheduler = None
         if opt.lrsc=="warmup":
-            warmup_scheduler = warmup.UntunedLinearWarmup(self.optimizer)
+            warmup_scheduler = LinearWarmupScheduler(
+                self.optimizer,
+                warmup_steps=len(self.train_loader) * 5
+            )
         for epoch in range(self.start_epoch, self.max_epoch):
-            tloss,lastTmet=self.train(epoch)
+            tloss,lastTmet=self.train(epoch, warmup_scheduler=warmup_scheduler)
             loss, lastmet = self.valid(self.valid_loader, epoch)
             #控制
             if opt.lrsc=="warmup":
-                with warmup_scheduler.dampening():
-                    self.lrsc.step()
+                self.lrsc.step()
             else:
                 self.lrsc.step(loss)
             if loss < self.best_loss:

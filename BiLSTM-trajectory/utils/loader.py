@@ -6,6 +6,7 @@ Adapted for 11-class agricultural activity classification
 """
 
 import os
+from pathlib import Path
 import torch
 from torch.utils.data import DataLoader
 import torch.utils.data as Data
@@ -16,6 +17,7 @@ from sklearn.preprocessing import StandardScaler
 import opt
 
 device = opt.device
+DEFAULT_VISUAL_FEATURES_PATH = Path(__file__).resolve().parents[1] / "data" / "visual_features.npz"
 
 
 def transform_dataset(x_data, y_data, n_input, n_output=1):
@@ -44,6 +46,13 @@ def transform_dataset(x_data, y_data, n_input, n_output=1):
     return X, Y
 
 
+def transform_indices(indices, n_input):
+    """
+    Align per-row indices with sequence labels by using the last row in each window.
+    """
+    return indices[n_input - 1:]
+
+
 # Trajectory feature columns (actual columns from aligned_data.csv)
 TRAJ_COLS = [
     '经度', '纬度', '间距(米)', '深度', '速度', '方向角'
@@ -59,7 +68,8 @@ def get_data_trajectory(path, step=8):
         step: sequence length (default 8 frames)
 
     Returns:
-        X_train, y_train, X_valid, y_valid, X_test, y_test, X_all, y_all
+        X_train, y_train, X_valid, y_valid, X_test, y_test, X_all, y_all,
+        train_indices, valid_indices, test_indices, all_indices
     """
     # Load data
     df = pd.read_csv(path)
@@ -74,15 +84,18 @@ def get_data_trajectory(path, step=8):
 
     # Split into train/test
     sss = ShuffleSplit(n_splits=1, test_size=opt.testRatio, random_state=42)
-    for train_index, test_index in sss.split(train_data, train_tag):
-        X_train, X_test = train_data[train_index], train_data[test_index]
-        y_train, y_test = train_tag[train_index], train_tag[test_index]
+    train_valid_indices, test_indices = next(sss.split(train_data, train_tag))
+    X_train_valid, X_test = train_data[train_valid_indices], train_data[test_indices]
+    y_train_valid, y_test = train_tag[train_valid_indices], train_tag[test_indices]
 
     # Split train into train/valid
     sss = ShuffleSplit(n_splits=1, test_size=opt.valRatio, random_state=42)
-    for train_index, test_index in sss.split(X_train, y_train):
-        X_train, X_valid = X_train[train_index], X_train[test_index]
-        y_train, y_valid = y_train[train_index], y_train[test_index]
+    train_sub_indices, valid_sub_indices = next(sss.split(X_train_valid, y_train_valid))
+    train_indices = train_valid_indices[train_sub_indices]
+    valid_indices = train_valid_indices[valid_sub_indices]
+
+    X_train, X_valid = X_train_valid[train_sub_indices], X_train_valid[valid_sub_indices]
+    y_train, y_valid = y_train_valid[train_sub_indices], y_train_valid[valid_sub_indices]
 
     # Standardize features
     scaler = StandardScaler()
@@ -96,6 +109,10 @@ def get_data_trajectory(path, step=8):
     X_valid, y_valid = transform_dataset(X_valid, y_valid, step, 1)
     X_test, y_test = transform_dataset(X_test, y_test, step, 1)
     X_all, y_all = transform_dataset(X_all, train_tag, step, 1)
+    train_indices = transform_indices(train_indices, step)
+    valid_indices = transform_indices(valid_indices, step)
+    test_indices = transform_indices(test_indices, step)
+    all_indices = transform_indices(np.arange(len(train_data)), step)
 
     print(f"Train: {X_train.shape[0]} sequences, Valid: {X_valid.shape[0]}, Test: {X_test.shape[0]}")
 
@@ -109,7 +126,8 @@ def get_data_trajectory(path, step=8):
     X_all = torch.tensor(X_all, dtype=torch.float32).to(device)
     y_all = torch.tensor(y_all, dtype=torch.long).squeeze(1).to(device)
 
-    return X_train, y_train, X_valid, y_valid, X_test, y_test, X_all, y_all
+    return X_train, y_train, X_valid, y_valid, X_test, y_test, X_all, y_all, \
+           train_indices, valid_indices, test_indices, all_indices
 
 
 def get_loader_trajectory(path, step=8, batch_size=64, num_workers=4):
@@ -119,7 +137,7 @@ def get_loader_trajectory(path, step=8, batch_size=64, num_workers=4):
     Returns:
         train_loader, valid_loader, test_loader, all_loader
     """
-    X_train, y_train, X_valid, y_valid, X_test, y_test, X_all, y_all = get_data_trajectory(path, step)
+    X_train, y_train, X_valid, y_valid, X_test, y_test, X_all, y_all, *_ = get_data_trajectory(path, step)
 
     train_dataset = Data.TensorDataset(X_train, y_train)
     valid_dataset = Data.TensorDataset(X_valid, y_valid)
@@ -134,7 +152,7 @@ def get_loader_trajectory(path, step=8, batch_size=64, num_workers=4):
     return train_loader, valid_loader, test_loader, all_loader
 
 
-def get_data_multimodal(path, step=8):
+def get_data_multimodal(path, step=8, visual_features_path=None):
     """
     Load multimodal data (trajectory + image features) for BiLSTM
 
@@ -142,23 +160,43 @@ def get_data_multimodal(path, step=8):
         X_traj_train, X_img_train, y_train, ...
     """
     # Load trajectory data
-    X_train, y_train, X_valid, y_valid, X_test, y_test, X_all, y_all = get_data_trajectory(path, step)
+    X_train, y_train, X_valid, y_valid, X_test, y_test, X_all, y_all, \
+    train_indices, valid_indices, test_indices, all_indices = get_data_trajectory(path, step)
 
-    # Load image features (from MBT model or pre-extracted features)
-    # For now, we'll use placeholder - in practice, you'd load pre-extracted features
-    # from a ViT or other vision model
+    features_path = Path(visual_features_path) if visual_features_path else DEFAULT_VISUAL_FEATURES_PATH
+    if not features_path.exists():
+        raise NotImplementedError(
+            f"Visual features file not found at {features_path}. "
+            "Run extract_visual_features.py first to generate BiLSTM-trajectory/data/visual_features.npz."
+        )
 
-    # Placeholder: random image features (replace with actual features)
-    img_feat_size = 768  # ViT-B16 feature dimension
+    features_data = np.load(features_path)
+    if 'features' not in features_data:
+        raise KeyError(f"Missing 'features' array in {features_path}")
 
-    def generate_img_features(n_samples):
-        """Placeholder: generate random image features"""
-        return torch.randn(n_samples, img_feat_size).to(device)
+    all_img_features = features_data['features']
+    if all_img_features.ndim != 2 or all_img_features.shape[1] != 768:
+        raise ValueError(
+            f"Expected visual features with shape (N, 768), got {all_img_features.shape} from {features_path}"
+        )
 
-    X_img_train = generate_img_features(X_train.shape[0])
-    X_img_valid = generate_img_features(X_valid.shape[0])
-    X_img_test = generate_img_features(X_test.shape[0])
-    X_img_all = generate_img_features(X_all.shape[0])
+    df = pd.read_csv(path)
+    if all_img_features.shape[0] != len(df):
+        raise ValueError(
+            f"Visual feature count ({all_img_features.shape[0]}) does not match CSV rows ({len(df)}). "
+            "Re-run extract_visual_features.py on the same aligned_data.csv file used for training."
+        )
+
+    all_img_features = torch.tensor(all_img_features, dtype=torch.float32).to(device)
+    train_indices = torch.as_tensor(train_indices, dtype=torch.long, device=device)
+    valid_indices = torch.as_tensor(valid_indices, dtype=torch.long, device=device)
+    test_indices = torch.as_tensor(test_indices, dtype=torch.long, device=device)
+    all_indices = torch.as_tensor(all_indices, dtype=torch.long, device=device)
+
+    X_img_train = all_img_features[train_indices]
+    X_img_valid = all_img_features[valid_indices]
+    X_img_test = all_img_features[test_indices]
+    X_img_all = all_img_features[all_indices]
 
     return X_train, X_img_train, y_train, \
            X_valid, X_img_valid, y_valid, \
@@ -166,7 +204,7 @@ def get_data_multimodal(path, step=8):
            X_all, X_img_all, y_all
 
 
-def get_loader_multimodal(path, step=8, batch_size=64, num_workers=4):
+def get_loader_multimodal(path, step=8, batch_size=64, num_workers=4, visual_features_path=None):
     """
     Get data loaders for multimodal training (trajectory + image)
 
@@ -176,7 +214,7 @@ def get_loader_multimodal(path, step=8, batch_size=64, num_workers=4):
     X_traj_train, X_img_train, y_train, \
     X_traj_valid, X_img_valid, y_valid, \
     X_traj_test, X_img_test, y_test, \
-    X_traj_all, X_img_all, y_all = get_data_multimodal(path, step)
+    X_traj_all, X_img_all, y_all = get_data_multimodal(path, step, visual_features_path=visual_features_path)
 
     train_dataset = Data.TensorDataset(X_traj_train, X_img_train, y_train)
     valid_dataset = Data.TensorDataset(X_traj_valid, X_img_valid, y_valid)

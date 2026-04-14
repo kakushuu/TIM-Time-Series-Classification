@@ -3,11 +3,14 @@ import numpy as np
 import pandas as pd
 import os
 import json
+import warnings
+
+os.environ.setdefault('MPLCONFIGDIR', '/tmp/matplotlib-agri-mbt')
 
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
-from sklearn.metrics import precision_score, recall_score, f1_score, classification_report
+from sklearn.metrics import precision_score, recall_score, f1_score, classification_report, confusion_matrix
 
 from dataloader.av_data import AV_Dataset, TRAJ_COLS
 from models.visual_model import AVmodel
@@ -51,6 +54,12 @@ def parse_options():
 
     # Training dynamics
     parser.add_argument('--gpu_id',     type=str,   default="cuda:0")
+    parser.add_argument('--all_gpus',   action='store_true',
+                        help='use all visible CUDA GPUs via DataParallel')
+    parser.add_argument('--gpu_ids',    type=str,   default='',
+                        help='comma-separated visible GPU ids for DataParallel, e.g. 0,1,2')
+    parser.add_argument('--quiet_warnings', action='store_true', default=True,
+                        help='suppress common DataParallel/PyTorch warnings')
     parser.add_argument('--lr',         type=float, default=3e-4)
     parser.add_argument('--batch_size', type=int,   default=8)
     parser.add_argument('--num_epochs', type=int,   default=15)
@@ -93,9 +102,18 @@ def parse_options():
                         help='directory to save experiment results')
 
     opts = parser.parse_args()
+    if opts.quiet_warnings:
+        warnings.filterwarnings('ignore', message='.*imbalance between your GPUs.*')
+        warnings.filterwarnings('ignore', message='.*torch.cuda.amp.autocast.*')
+        warnings.filterwarnings('ignore', message='.*Was asked to gather along dimension 0.*')
+        warnings.filterwarnings('ignore', message='.*Attempting to run cuBLAS.*')
     torch.manual_seed(opts.seed)
     opts.device = torch.device(opts.gpu_id if torch.cuda.is_available() else 'cpu')
     return opts
+
+
+def unwrap_model(model):
+    return model.module if isinstance(model, nn.DataParallel) else model
 
 
 # ── Training / Validation loops ───────────────────────────────────────────────
@@ -225,6 +243,102 @@ def compute_detailed_metrics(y_true, y_pred, num_classes):
     }
 
 
+def save_experiment_visualizations(args, exp_tag, history, detailed_metrics, y_true, y_pred, pred_df):
+    import matplotlib
+    matplotlib.use('Agg')
+    import matplotlib.pyplot as plt
+    import numpy as np
+
+    output_dir = os.path.join(args.output_dir, 'visualizations', exp_tag)
+    os.makedirs(output_dir, exist_ok=True)
+
+    metrics_csv = os.path.join(output_dir, 'metrics.csv')
+    pd.DataFrame({
+        'epoch': np.arange(1, len(history['train_loss']) + 1),
+        'train_loss': history['train_loss'],
+        'train_acc': history['train_acc'],
+        'val_loss': history['val_loss'],
+        'val_acc': history['val_acc'],
+    }).to_csv(metrics_csv, index=False, encoding='utf-8-sig')
+
+    epochs = np.arange(1, len(history['train_loss']) + 1)
+    fig, axes = plt.subplots(1, 2, figsize=(12, 4.5), dpi=160)
+    axes[0].plot(epochs, history['train_acc'], label='Train Acc', linewidth=2)
+    axes[0].plot(epochs, history['val_acc'], label='Val Acc', linewidth=2)
+    axes[0].set_title(f'{args.mode} Accuracy')
+    axes[0].set_xlabel('Epoch')
+    axes[0].set_ylabel('Accuracy (%)')
+    axes[0].grid(alpha=0.25)
+    axes[0].legend()
+    axes[1].plot(epochs, history['train_loss'], label='Train Loss', linewidth=2)
+    axes[1].plot(epochs, history['val_loss'], label='Val Loss', linewidth=2)
+    axes[1].set_title(f'{args.mode} Loss')
+    axes[1].set_xlabel('Epoch')
+    axes[1].grid(alpha=0.25)
+    axes[1].legend()
+    fig.tight_layout()
+    fig.savefig(os.path.join(output_dir, 'training_curves.png'))
+    plt.close(fig)
+
+    per_class = detailed_metrics['per_class']
+    class_ids = np.arange(args.num_classes)
+    f1_values = [per_class[f'class_{i}']['f1_score'] for i in class_ids]
+    recall_values = [per_class[f'class_{i}']['recall'] for i in class_ids]
+    precision_values = [per_class[f'class_{i}']['precision'] for i in class_ids]
+    fig, ax = plt.subplots(figsize=(12, 4.5), dpi=160)
+    width = 0.25
+    ax.bar(class_ids - width, precision_values, width, label='Precision')
+    ax.bar(class_ids, recall_values, width, label='Recall')
+    ax.bar(class_ids + width, f1_values, width, label='F1')
+    ax.set_title(f'{args.mode} Per-Class Metrics')
+    ax.set_xlabel('Class ID')
+    ax.set_ylabel('%')
+    ax.set_ylim(0, 105)
+    ax.set_xticks(class_ids)
+    ax.grid(axis='y', alpha=0.25)
+    ax.legend()
+    fig.tight_layout()
+    fig.savefig(os.path.join(output_dir, 'per_class_metrics.png'))
+    plt.close(fig)
+
+    mat = confusion_matrix(y_true, y_pred, labels=list(range(args.num_classes)))
+    norm = mat / np.maximum(mat.sum(axis=1, keepdims=True), 1)
+    fig, ax = plt.subplots(figsize=(8, 7), dpi=160)
+    im = ax.imshow(norm, cmap='Blues', vmin=0, vmax=1)
+    ax.set_title(f'{args.mode} Confusion Matrix')
+    ax.set_xlabel('Predicted')
+    ax.set_ylabel('True')
+    ax.set_xticks(class_ids)
+    ax.set_yticks(class_ids)
+    for i in class_ids:
+        for j in class_ids:
+            if mat[i, j] > 0:
+                ax.text(j, i, str(int(mat[i, j])), ha='center', va='center', fontsize=7)
+    fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
+    fig.tight_layout()
+    fig.savefig(os.path.join(output_dir, 'confusion_matrix.png'))
+    plt.close(fig)
+
+    if {'经度', '纬度', 'correct'}.issubset(pred_df.columns):
+        fig, ax = plt.subplots(figsize=(8, 6), dpi=160)
+        correct = pred_df['correct'].astype(bool).values
+        ax.scatter(pred_df.loc[correct, '经度'], pred_df.loc[correct, '纬度'],
+                   c='green', s=8, alpha=0.35, label='Correct')
+        ax.scatter(pred_df.loc[~correct, '经度'], pred_df.loc[~correct, '纬度'],
+                   c='red', s=14, alpha=0.65, marker='x', label='Wrong')
+        acc = correct.mean() * 100 if len(correct) else 0.0
+        ax.set_title(f'{args.mode} Spatial Prediction Errors (Acc: {acc:.2f}%)')
+        ax.set_xlabel('Longitude')
+        ax.set_ylabel('Latitude')
+        ax.grid(alpha=0.25)
+        ax.legend()
+        fig.tight_layout()
+        fig.savefig(os.path.join(output_dir, 'spatial_errors.png'))
+        plt.close(fig)
+
+    print(f"\t Visualizations saved to {output_dir}")
+
+
 # ── Main ──────────────────────────────────────────────────────────────────────
 
 def train_test(args):
@@ -283,6 +397,15 @@ def train_test(args):
                     bilstm_hidden=args.bilstm_hidden,
                     bilstm_layers=args.bilstm_layers)
     model.to(args.device)
+    if args.all_gpus and args.device.type == 'cuda' and torch.cuda.device_count() > 1:
+        device_ids = None
+        if args.gpu_ids:
+            device_ids = [int(item) for item in args.gpu_ids.split(',') if item.strip()]
+        model = nn.DataParallel(model, device_ids=device_ids)
+        visible = device_ids if device_ids is not None else list(range(torch.cuda.device_count()))
+        print(f"\t DataParallel GPUs: {visible}")
+    else:
+        print(f"\t Device: {args.device}")
     print(f"\t Model loaded (mode={args.mode})")
     print('\t Trainable params =',
           sum(p.numel() for p in model.parameters() if p.requires_grad))
@@ -344,7 +467,10 @@ def train_test(args):
 
         if val_acc > best_val_acc:
             best_val_acc = val_acc
-            best_model_state = model.state_dict().copy()
+            best_model_state = {
+                k: v.detach().cpu().clone()
+                for k, v in unwrap_model(model).state_dict().items()
+            }
 
     print(f"\n\t Training complete — best val acc: {best_val_acc:.2f}%")
 
@@ -359,8 +485,10 @@ def train_test(args):
     }, checkpoint_path)
     print(f"\t Best model checkpoint saved to {checkpoint_path}")
 
-    # ── Compute detailed metrics on final model ────────────────────────────
-    print("\n\t Computing detailed classification metrics...")
+    # ── Compute detailed metrics on best model ─────────────────────────────
+    if best_model_state is not None:
+        unwrap_model(model).load_state_dict(best_model_state)
+    print("\n\t Computing detailed classification metrics on best checkpoint...")
     val_loss, val_acc, y_pred, y_true = val_one_epoch(
         testloader, model, loss_fn, args.device, return_predictions=True
     )
@@ -383,7 +511,12 @@ def train_test(args):
     os.makedirs(args.output_dir, exist_ok=True)
     exp_tag = f"{args.mode}_{args.traj_arch}_{args.loss_type}"
     result_file = os.path.join(args.output_dir, f'results_{exp_tag}.json')
-    checkpoint_tag = f"{exp_tag}_best.pth"
+    predictions_file = os.path.join(args.output_dir, f'predictions_{exp_tag}.csv')
+    pred_df = test_df.reset_index(drop=True).copy()
+    pred_df['y_true'] = y_true
+    pred_df['y_pred'] = y_pred
+    pred_df['correct'] = pred_df['y_true'] == pred_df['y_pred']
+    pred_df.to_csv(predictions_file, index=False, encoding='utf-8-sig')
     results = {
         'mode': args.mode,
         'traj_arch': args.traj_arch,
@@ -391,14 +524,18 @@ def train_test(args):
         'best_val_acc': best_val_acc,
         'final_train_acc': history['train_acc'][-1],
         'final_val_acc': history['val_acc'][-1],
+        'best_checkpoint_val_acc': val_acc,
         'metrics': detailed_metrics,
         'history': history,
+        'predictions_file': predictions_file,
         'args': {k: str(v) if not isinstance(v, (str, int, float, bool, list, dict, type(None))) else v
                  for k, v in vars(args).items()}
     }
     with open(result_file, 'w') as f:
         json.dump(results, f, indent=2)
     print(f"\t Results saved to {result_file}")
+    print(f"\t Predictions saved to {predictions_file}")
+    save_experiment_visualizations(args, exp_tag, history, detailed_metrics, y_true, y_pred, pred_df)
 
     return best_val_acc
 
@@ -406,8 +543,6 @@ def train_test(args):
 if __name__ == "__main__":
     opts = parse_options()
     train_test(args=opts)
-
-
 
 
 

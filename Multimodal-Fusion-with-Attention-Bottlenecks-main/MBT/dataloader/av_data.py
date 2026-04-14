@@ -37,6 +37,20 @@ class AV_Dataset(Dataset):
         self.data_dir = data_dir
         self.seq_len  = seq_len
         self.load_images = load_images
+        clip_names = self.df['frame_path'].apply(
+            lambda p: str(p).rsplit('/', 1)[0] if pd.notna(p) else ''
+        )
+        self.clip_ids = clip_names.astype('category').cat.codes.values
+        self.clip_boundaries = []
+        if len(self.clip_ids) > 0:
+            current_clip = self.clip_ids[0]
+            start = 0
+            for i in range(1, len(self.clip_ids)):
+                if self.clip_ids[i] != current_clip:
+                    self.clip_boundaries.append((start, i))
+                    start = i
+                    current_clip = self.clip_ids[i]
+            self.clip_boundaries.append((start, len(self.clip_ids)))
 
         if load_images:
             self.visual_transforms = Tv.Compose([
@@ -78,6 +92,10 @@ class AV_Dataset(Dataset):
         # ── Trajectory sequence: sliding window [idx-T+1 … idx] ─────────────
         # If idx < T-1 we repeat the earliest available frame (left-padding).
         start = max(0, idx - self.seq_len + 1)
+        for clip_start, clip_end in self.clip_boundaries:
+            if clip_start <= idx < clip_end:
+                start = max(start, clip_start)
+                break
         traj_seq = self.traj_all[start : idx + 1]           # (<=T, 27)
 
         if traj_seq.shape[0] < self.seq_len:

@@ -17,7 +17,21 @@ image/
 .claude/skills/*/
 !.claude/skills/*/SKILL.md
 !.claude/skills/README.md
+!.claude/skills/agri-image-autoresearch/
+!.claude/skills/agri-image-autoresearch/SKILL.md
+!.claude/skills/agri-image-autoresearch/scripts/
+!.claude/skills/agri-image-autoresearch/scripts/*.py
 .agents/
+!.agents/
+!.agents/skills/
+!.agents/skills/agri-image-autoresearch/
+!.agents/skills/agri-image-autoresearch/SKILL.md
+!.agents/skills/agri-image-autoresearch/scripts/
+!.agents/skills/agri-image-autoresearch/scripts/*.py
+
+# Local agent/runtime state
+.codex
+.autoresearch/
 
 # Python
 __pycache__/
@@ -48,6 +62,7 @@ wheels/
 *.pth
 *.pt
 *.ckpt
+*.pkl
 experiments/checkpoints/
 experiments/metrics_test/
 
@@ -58,6 +73,7 @@ experiments/metrics_test/
 
 # Logs
 *.log
+*.pid
 
 # Node modules
 node_modules/
@@ -74,4 +90,13 @@ Thumbs.db
 
 # Project-specific temporary directories
 *_tmp_*
-.agents/
+tmp/
+
+# Local data and large experiment run outputs. Keep source scripts and curated
+# result reports under experiments/, but do not track generated run directories.
+logs/
+experiments/agri_image_autoresearch/
+experiments/new_adaptive_mbt_20241018_full/
+experiments/multimodal_*_smoke/
+paper/*.aux
+paper/*.out

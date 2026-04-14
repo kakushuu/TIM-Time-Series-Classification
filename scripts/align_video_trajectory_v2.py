@@ -55,6 +55,9 @@ class VideoTrajectoryAligner:
         self.trajectory_df['定位时间'] = pd.to_datetime(self.trajectory_df['定位时间'])
 
         # 创建时间索引以便快速查找
+        # Use pandas nanosecond epoch conversion for both trajectory and frame times.
+        # Mixing this with datetime.timestamp() on naive datetimes can introduce timezone
+        # offsets and cause all matches to fail.
         self.trajectory_df['时间戳'] = self.trajectory_df['定位时间'].astype(np.int64) // 10**9
         self.time_index = {row['时间戳']: idx for idx, row in self.trajectory_df.iterrows()}
 
@@ -231,7 +234,7 @@ class VideoTrajectoryAligner:
 
             # 计算这一帧对应的时间
             frame_time = start_time + timedelta(seconds=second)
-            frame_timestamp = int(frame_time.timestamp())
+            frame_timestamp = pd.Timestamp(frame_time).value // 10**9
 
             # 在时间容差范围内查找匹配的轨迹数据
             matched_idx = None

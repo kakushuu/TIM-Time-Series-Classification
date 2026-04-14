@@ -45,6 +45,32 @@ python scripts/align_agri_data.py \
 
 ---
 
+### 3. `agri-image-autoresearch`
+
+**Purpose**: Run a disciplined autonomous experiment loop for improving Agri-MBT image-only training before trajectory-only retuning and multimodal fusion.
+
+**When to use**: Tuning `src/train_ablation.py --mode image_only`, comparing visual encoder changes, running repeated image-only experiments, or preparing a stable image branch for multimodal experiments.
+
+**Quick start**:
+```bash
+python .agents/skills/agri-image-autoresearch/scripts/create_session_files.py \
+    --gpu-ids 1,2,5,6 \
+    --epochs 30 \
+    --batch-size 8 \
+    --suite-dir experiments/agri_image_autoresearch
+```
+
+**Key features**:
+- Uses `best_val_macro_f1` as the primary keep/discard metric
+- Keeps test metrics audit-only to reduce validation overfitting
+- Creates `autoresearch.md`, `autoresearch.sh`, and `autoresearch.checks.sh`
+- Converts image-only `summary.json` into parseable `METRIC` lines
+- Defines project-specific scope, baseline commands, and high-value hypotheses
+
+**Full documentation**: See `.claude/skills/agri-image-autoresearch/SKILL.md`
+
+---
+
 ## Skill Management
 
 ### Installed Skills
@@ -60,6 +86,10 @@ Skills are tracked in `skills-lock.json` at the project root. Current skills:
       "sourceType": "github"
     },
     "align-agri-data": {
+      "source": "local",
+      "sourceType": "local"
+    },
+    "agri-image-autoresearch": {
       "source": "local",
       "sourceType": "local"
     }

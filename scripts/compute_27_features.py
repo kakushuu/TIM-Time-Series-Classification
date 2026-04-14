@@ -233,6 +233,9 @@ def main(input_csv, output_csv):
 
     # 保存
     print(f"\n保存 27 维特征数据: {output_csv}")
+    output_parent = os.path.dirname(output_csv)
+    if output_parent:
+        os.makedirs(output_parent, exist_ok=True)
     output_df.to_csv(output_csv, index=False)
     print(f"输出数据形状: {output_df.shape}")
     print(f"输出列名:\n{output_df.columns.tolist()}")

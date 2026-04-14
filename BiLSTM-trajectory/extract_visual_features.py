@@ -7,6 +7,7 @@ Extract visual features from MBT model for BiLSTM training
 
 import os
 import sys
+from pathlib import Path
 import torch
 import torch.nn as nn
 import pandas as pd
@@ -14,13 +15,17 @@ import numpy as np
 from PIL import Image
 from tqdm import tqdm
 
+BILSTM_DIR = Path(__file__).resolve().parent
+PROJECT_ROOT = BILSTM_DIR.parent
+MBT_DIR = PROJECT_ROOT / 'Multimodal-Fusion-with-Attention-Bottlenecks-main' / 'MBT'
+
 # Add MBT model path
-sys.path.insert(0, '/home/research/Agri-MBT/Multimodal-Fusion-with-Attention-Bottlenecks-main/MBT')
+sys.path.insert(0, str(MBT_DIR))
 
 def extract_visual_features(
-    csv_file='/home/research/Agri-MBT/data/aligned_output/aligned_data.csv',
-    data_dir='/home/research/Agri-MBT',
-    output_file='/home/research/Agri-MBT/BiLSTM-trajectory/data/visual_features.npz',
+    csv_file=str(PROJECT_ROOT / 'data' / 'aligned_output' / 'aligned_data.csv'),
+    data_dir=str(PROJECT_ROOT),
+    output_file=str(BILSTM_DIR / 'data' / 'visual_features.npz'),
     batch_size=32
 ):
     """
@@ -46,28 +51,33 @@ def extract_visual_features(
     # Feature storage
     all_features = []
     all_filepaths = []
+    csv_path = Path(csv_file)
+    root_dir = Path(data_dir)
+    df = pd.read_csv(csv_path)
 
     print("Extracting visual features...")
     with torch.no_grad():
         for idx, row in tqdm(df.iterrows(), total=len(df)):
-            # Construct frame path
-            video_path = row['视频路径']
-            frame_idx = row['帧序号']
+            frame_path = None
 
-            # Expected path: data_dir/rgb_frames/{clip_name}/frame_{idx}.jpg
-            clip_name = os.path.splitext(os.path.basename(video_path))[0]
-            frame_path = os.path.join(
-                data_dir,
-                'rgb_frames',
-                clip_name,
-                f'frame_{frame_idx:04d}.jpg'
-            )
+            if 'frame_path' in df.columns and pd.notna(row['frame_path']):
+                candidate = Path(row['frame_path'])
+                frame_path = candidate if candidate.is_absolute() else root_dir / candidate
+            elif 'video_file' in df.columns:
+                video_file = row['video_file']
+                frame_number = row.get('frame_number', row.get('帧序号'))
+                if pd.isna(video_file) or pd.isna(frame_number):
+                    print(f"⚠ Missing frame reference at row {idx}")
+                else:
+                    clip_name = Path(str(video_file)).stem
+                    frame_path = root_dir / 'rgb_frames' / clip_name / f"frame_{int(frame_number):04d}.jpg"
 
-            if not os.path.exists(frame_path):
-                print(f"⚠ Frame not found: {frame_path}")
+            if frame_path is None or not frame_path.exists():
+                missing_path = str(frame_path) if frame_path is not None else f"row {idx}"
+                print(f"⚠ Frame not found: {missing_path}")
                 # Use zero features for missing frames
                 all_features.append(np.zeros(768, dtype=np.float32))
-                all_filepaths.append(frame_path)
+                all_filepaths.append(missing_path)
                 continue
 
             try:
@@ -87,12 +97,12 @@ def extract_visual_features(
                 features = vit(img_tensor)  # [1, 768]
 
                 all_features.append(features.cpu().numpy().squeeze())
-                all_filepaths.append(frame_path)
+                all_filepaths.append(str(frame_path))
 
             except Exception as e:
                 print(f"⚠ Error processing {frame_path}: {e}")
                 all_features.append(np.zeros(768, dtype=np.float32))
-                all_filepaths.append(frame_path)
+                all_filepaths.append(str(frame_path))
 
     # Convert to numpy array
     all_features = np.array(all_features, dtype=np.float32)
@@ -111,8 +121,8 @@ def extract_visual_features(
 
 
 def integrate_features_to_loader(
-    features_file='/home/research/Agri-MBT/BiLSTM-trajectory/data/visual_features.npz',
-    loader_file='/home/research/Agri-MBT/BiLSTM-trajectory/utils/loader.py'
+    features_file=str(BILSTM_DIR / 'data' / 'visual_features.npz'),
+    loader_file=str(BILSTM_DIR / 'utils' / 'loader.py')
 ):
     """
     Modify loader.py to use real visual features instead of random ones
@@ -153,11 +163,11 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser(description='Extract visual features from MBT model')
-    parser.add_argument('--csv', default='/home/research/Agri-MBT/data/aligned_output/aligned_data.csv',
+    parser.add_argument('--csv', default=str(PROJECT_ROOT / 'data' / 'aligned_output' / 'aligned_data.csv'),
                         help='Path to aligned_data.csv')
-    parser.add_argument('--data-dir', default='/home/research/Agri-MBT',
+    parser.add_argument('--data-dir', default=str(PROJECT_ROOT),
                         help='Root data directory')
-    parser.add_argument('--output', default='/home/research/Agri-MBT/BiLSTM-trajectory/data/visual_features.npz',
+    parser.add_argument('--output', default=str(BILSTM_DIR / 'data' / 'visual_features.npz'),
                         help='Output features file')
     parser.add_argument('--batch-size', type=int, default=32,
                         help='Batch size for feature extraction')

@@ -1,72 +1,151 @@
 """
-Cross-Attention 融合模块
+时间对齐与长尾鲁棒融合模块
 
-用 GNSS Query 向视觉 token 序列做交叉注意力，
-提取与当前农机状态（速度/深度/方向）最相关的视觉特征。
-
-前向传播:
-  输入: query_gnss (B, 768), visual_tokens (B, T*196, 768)
-  输出: fused_feature (B, 768)
+包含三个核心机制：
+- TAM: 轨迹 token 对视频帧 token 的软时间对齐
+- Bottleneck fusion: 利用瓶颈 token 汇聚跨模态共享信息
+- Reliability gating: 根据模态质量动态调整视频/轨迹贡献
 """
 
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 
 
-class CrossAttentionFusion(nn.Module):
+class TemporalAlignmentFusion(nn.Module):
     """
-    GNSS-conditioned 跨模态注意力融合
+    TAIF-Net 融合层
 
-    公式:
-      F = MultiheadAttn(Q=Q_gnss, K=X_visual, V=X_visual)
+    输入:
+      traj_tokens:   (B, Lt, D)
+      traj_global:   (B, D)
+      visual_tokens: (B, Tv, P, D)
 
-    Q_gnss 由 GNSSEncoder 输出，作为"查询"向量
-    X_visual 为 T 帧展平后的 patch token 序列（长度 T*196）
+    输出:
+      fused: (B, D)
+      aux:   dict
     """
 
-    def __init__(self, embed_dim: int = 768, num_heads: int = 12, dropout: float = 0.0):
-        """
-        Args:
-            embed_dim: 注意力维度（与 ViT embedding 维度一致，默认 768）
-            num_heads: 注意力头数（默认 12，每头 64 维）
-            dropout:   注意力 dropout（默认 0）
-        """
+    def __init__(
+        self,
+        embed_dim: int = 768,
+        num_heads: int = 8,
+        num_bottlenecks: int = 4,
+        dropout: float = 0.1,
+    ):
         super().__init__()
-        assert embed_dim % num_heads == 0, \
-            f"embed_dim({embed_dim}) 必须能被 num_heads({num_heads}) 整除"
+        self.embed_dim = embed_dim
+        self.num_bottlenecks = num_bottlenecks
 
-        self.attn = nn.MultiheadAttention(
+        self.frame_pool = nn.Sequential(
+            nn.Linear(embed_dim, embed_dim),
+            nn.GELU(),
+            nn.Linear(embed_dim, 1),
+        )
+
+        self.traj_to_video_attn = nn.MultiheadAttention(
             embed_dim=embed_dim,
             num_heads=num_heads,
             dropout=dropout,
-            batch_first=True,   # 使用 (B, seq, dim) 格式
+            batch_first=True,
         )
-        self.norm = nn.LayerNorm(embed_dim)
 
-    def forward(
-        self,
-        query_gnss: torch.Tensor,
-        visual_tokens: torch.Tensor,
-    ) -> torch.Tensor:
-        """
-        Args:
-            query_gnss:    (B, 768)         — GNSS 编码的查询向量
-            visual_tokens: (B, T*196, 768)  — 展平的视觉 patch token 序列
-        Returns:
-            fused:         (B, 768)         — 融合后特征向量
-        """
-        B = query_gnss.shape[0]
-        assert query_gnss.shape == (B, 768), \
-            f"期望 query_gnss 形状 (B, 768)，实际: {query_gnss.shape}"
-        assert visual_tokens.ndim == 3 and visual_tokens.shape[0] == B, \
-            f"期望 visual_tokens 形状 (B, seq, 768)，实际: {visual_tokens.shape}"
+        self.bottleneck_tokens = nn.Parameter(torch.randn(1, num_bottlenecks, embed_dim) * 0.02)
+        self.bottleneck_attn = nn.MultiheadAttention(
+            embed_dim=embed_dim,
+            num_heads=num_heads,
+            dropout=dropout,
+            batch_first=True,
+        )
 
-        # 扩展 Query 为序列维: (B, 768) → (B, 1, 768)
-        q = query_gnss.unsqueeze(1)
+        self.reliability_gate = nn.Sequential(
+            nn.Linear(embed_dim * 2, embed_dim),
+            nn.GELU(),
+            nn.Linear(embed_dim, 2),
+        )
 
-        # 交叉注意力: Q=(B,1,768), K=V=(B,T*196,768) → (B,1,768)
-        attn_out, _ = self.attn(query=q, key=visual_tokens, value=visual_tokens)
+        self.classifier_prep = nn.Sequential(
+            nn.LayerNorm(embed_dim),
+            nn.Linear(embed_dim, embed_dim),
+            nn.GELU(),
+            nn.LayerNorm(embed_dim),
+        )
 
-        # squeeze 并归一化: (B, 768)
-        fused = self.norm(attn_out.squeeze(1))
+        self._last_aux = {}
+
+    def _pool_frames(self, visual_tokens: torch.Tensor):
+        B, Tv, P, D = visual_tokens.shape
+        flat = visual_tokens.reshape(B * Tv, P, D)
+        scores = self.frame_pool(flat)
+        weights = torch.softmax(scores, dim=1)
+        pooled = (flat * weights).sum(dim=1)
+        return pooled.reshape(B, Tv, D)
+
+    def _alignment_regularizer(self, attn_weights: torch.Tensor) -> torch.Tensor:
+        if attn_weights.shape[1] < 2:
+            return attn_weights.new_tensor(0.0)
+        diff = attn_weights[:, 1:, :] - attn_weights[:, :-1, :]
+        return diff.pow(2).mean()
+
+    def _balance_regularizer(self, alpha_v: torch.Tensor, alpha_t: torch.Tensor) -> torch.Tensor:
+        return ((alpha_v - 0.5).pow(2) + (alpha_t - 0.5).pow(2)).mean()
+
+    def forward(self, traj_tokens: torch.Tensor, traj_global: torch.Tensor, visual_tokens: torch.Tensor):
+        assert traj_tokens.ndim == 3, f"期望 traj_tokens 形状 (B, Lt, D)，实际: {traj_tokens.shape}"
+        assert traj_global.ndim == 2, f"期望 traj_global 形状 (B, D)，实际: {traj_global.shape}"
+        assert visual_tokens.ndim == 4, (
+            f"期望 visual_tokens 形状 (B, Tv, P, D)，实际: {visual_tokens.shape}"
+        )
+
+        B = traj_tokens.shape[0]
+        frame_tokens = self._pool_frames(visual_tokens)
+
+        aligned_visual, attn_weights = self.traj_to_video_attn(
+            query=traj_tokens,
+            key=frame_tokens,
+            value=frame_tokens,
+            need_weights=True,
+            average_attn_weights=True,
+        )
+        aligned_global = aligned_visual.mean(dim=1)
+
+        bottlenecks = self.bottleneck_tokens.expand(B, -1, -1)
+        shared_tokens = torch.cat([traj_tokens, aligned_visual], dim=1)
+        bottleneck_out, _ = self.bottleneck_attn(
+            query=bottlenecks,
+            key=shared_tokens,
+            value=shared_tokens,
+            need_weights=False,
+        )
+        shared_global = bottleneck_out.mean(dim=1)
+
+        gate_logits = self.reliability_gate(torch.cat([traj_global, aligned_global], dim=-1))
+        gate = torch.softmax(gate_logits, dim=-1)
+        alpha_t = gate[:, :1]
+        alpha_v = gate[:, 1:]
+
+        fused = alpha_t * traj_global + alpha_v * aligned_global + shared_global
+        fused = self.classifier_prep(fused)
+
+        self._last_aux = {
+            'alignment_weights': attn_weights,
+            'alpha_t': alpha_t,
+            'alpha_v': alpha_v,
+            'alignment_loss': self._alignment_regularizer(attn_weights),
+            'balance_loss': self._balance_regularizer(alpha_v, alpha_t),
+            'aligned_visual_global': aligned_global,
+            'shared_global': shared_global,
+        }
         return fused
+
+    def get_aux_losses(self):
+        return {
+            'alignment_loss': self._last_aux.get('alignment_loss', 0.0),
+            'balance_loss': self._last_aux.get('balance_loss', 0.0),
+        }
+
+    def get_aux_outputs(self):
+        return self._last_aux
+
+
+CrossAttentionFusion = TemporalAlignmentFusion

@@ -10,6 +10,11 @@
       "source": "local",
       "sourceType": "local",
       "computedHash": "local-skill"
+    },
+    "agri-image-autoresearch": {
+      "source": "local",
+      "sourceType": "local",
+      "computedHash": "local-skill"
     }
   }
 }

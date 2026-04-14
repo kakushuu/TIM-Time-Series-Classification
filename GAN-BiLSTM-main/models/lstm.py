@@ -57,13 +57,14 @@ class AttBiLSTM(nn.Module):
         self.layernorm = nn.LayerNorm(rnn_size)
 
     def forward(self, x):
+        device = x.device
         size = x.shape[0]
         # 创建副对角线元素
-        sub_diag_0 = torch.ones(size)
-        sub_diag_1 = torch.ones(size - 1)
-        sub_diag_2 = torch.ones(size - 2)
-        sub_diag_3 = torch.ones(size - 1)
-        sub_diag_4 = torch.ones(size - 2)
+        sub_diag_0 = torch.ones(size, device=device)
+        sub_diag_1 = torch.ones(size - 1, device=device)
+        sub_diag_2 = torch.ones(size - 2, device=device)
+        sub_diag_3 = torch.ones(size - 1, device=device)
+        sub_diag_4 = torch.ones(size - 2, device=device)
         # 创建对应的副对角线张量
         tensor0 = torch.diag(sub_diag_0, diagonal=0)
         tensor1 = torch.diag(sub_diag_1, diagonal=1)
@@ -72,7 +73,7 @@ class AttBiLSTM(nn.Module):
         tensor4 = torch.diag(sub_diag_4, diagonal=-2)
         # 将两条副对角线张量相加
         adj = tensor0 + tensor1 + tensor2 + tensor3 +tensor4
-        adj=adj.cuda()
+        adj = adj.to(device)
         denom = adj.sum(-1, keepdim=True)
         # (batch_size, time,emb_size)
         x.transpose_(1, 2)

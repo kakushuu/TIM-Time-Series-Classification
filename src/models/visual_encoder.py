@@ -6,7 +6,7 @@
 
 前向传播:
   输入:  video (B, T, 3, 224, 224)
-  输出:  tokens (B, T*196, 768)   — 展平的 patch token 序列
+  输出:  tokens (B, T, 196, 768)   — 保留时间结构的 patch token 序列
 """
 
 import sys
@@ -162,7 +162,7 @@ class VisualEncoder(nn.Module):
         Args:
             video: (B, T, 3, 224, 224)
         Returns:
-            tokens: (B, T*196, 768)  — 展平的多帧 patch token 序列
+            tokens: (B, T, 196, 768)  — 保留时间维的多帧 patch token 序列
         """
         B, T, C, H, W = video.shape
         assert H == W == 224, f"期望 224×224 输入，实际: {H}×{W}"
@@ -170,5 +170,5 @@ class VisualEncoder(nn.Module):
         # reshape 为 (B*T, 3, 224, 224) 并行处理
         frames = video.view(B * T, C, H, W)
         tokens = self.encode_single_frame(frames)   # (B*T, 196, 768)
-        tokens = tokens.reshape(B, T * 196, 768)     # (B, T*196, 768)
+        tokens = tokens.reshape(B, T, 196, 768)     # (B, T, 196, 768)
         return tokens
