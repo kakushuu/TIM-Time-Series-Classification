@@ -1,0 +1,42 @@
+% math_commands.tex — Shared notation for Agri-MBT paper
+
+% === Common Math Shortcuts ===
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Var}{\mathrm{Var}}
+
+% Operators
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator{\tr}{tr}
+\DeclareMathOperator{\softmax}{softmax}
+
+% Vectors and matrices (bold)
+\newcommand{\vx}{\mathbf{x}}
+\newcommand{\vy}{\mathbf{y}}
+\newcommand{\vz}{\mathbf{z}}
+\newcommand{\vw}{\mathbf{w}}
+\newcommand{\vtheta}{\boldsymbol{\theta}}
+
+% Norms
+\newcommand{\norm}[1]{\left\|#1\right\|}
+\newcommand{\abs}[1]{\left|#1\right|}
+\newcommand{\inner}[2]{\langle #1, #2 \rangle}
+
+% Sets
+\newcommand{\cX}{\mathcal{X}}
+\newcommand{\cY}{\mathcal{Y}}
+\newcommand{\cD}{\mathcal{D}}
+\newcommand{\cL}{\mathcal{L}}
+
+% === Paper-Specific Notation ===
+\newcommand{\ours}{Agri-MBT}
+\newcommand{\mbt}{\text{MBT}}
+\newcommand{\enc}[1]{g_{#1}}             % modality encoder
+\newcommand{\fuse}{\mathcal{F}}           % fusion function
+\newcommand{\bntok}{\mathbf{B}}          % bottleneck tokens
+\newcommand{\trajtok}{\mathbf{H}^{t}}    % trajectory features
+\newcommand{\vidtok}{\mathbf{H}^{v}}     % visual features
+\newcommand{\audtok}{\mathbf{H}^{a}}     % audio features

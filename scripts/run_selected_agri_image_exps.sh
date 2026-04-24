@@ -213,6 +213,7 @@ case "$ACTION" in
     ;;
   run)
     run_all
+    exit $?
     ;;
   check)
     check_inputs

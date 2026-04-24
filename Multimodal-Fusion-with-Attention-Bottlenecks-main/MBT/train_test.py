@@ -319,23 +319,6 @@ def save_experiment_visualizations(args, exp_tag, history, detailed_metrics, y_t
     fig.savefig(os.path.join(output_dir, 'confusion_matrix.png'))
     plt.close(fig)
 
-    if {'经度', '纬度', 'correct'}.issubset(pred_df.columns):
-        fig, ax = plt.subplots(figsize=(8, 6), dpi=160)
-        correct = pred_df['correct'].astype(bool).values
-        ax.scatter(pred_df.loc[correct, '经度'], pred_df.loc[correct, '纬度'],
-                   c='green', s=8, alpha=0.35, label='Correct')
-        ax.scatter(pred_df.loc[~correct, '经度'], pred_df.loc[~correct, '纬度'],
-                   c='red', s=14, alpha=0.65, marker='x', label='Wrong')
-        acc = correct.mean() * 100 if len(correct) else 0.0
-        ax.set_title(f'{args.mode} Spatial Prediction Errors (Acc: {acc:.2f}%)')
-        ax.set_xlabel('Longitude')
-        ax.set_ylabel('Latitude')
-        ax.grid(alpha=0.25)
-        ax.legend()
-        fig.tight_layout()
-        fig.savefig(os.path.join(output_dir, 'spatial_errors.png'))
-        plt.close(fig)
-
     print(f"\t Visualizations saved to {output_dir}")
 
 
@@ -543,7 +526,6 @@ def train_test(args):
 if __name__ == "__main__":
     opts = parse_options()
     train_test(args=opts)
-
 
 
 

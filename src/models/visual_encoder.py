@@ -97,16 +97,20 @@ class VisualEncoder(nn.Module):
       - AdaptFormer adapter 参数: requires_grad = True
     """
 
-    def __init__(self, adapter_dim: int = 64, pretrained: bool = True):
+    def __init__(self, adapter_dim: int = 64, pretrained: bool = True, pretrained_path: str = ""):
         """
         Args:
             adapter_dim: AdaptFormer 适配器瓶颈维度（默认 64）
             pretrained:  是否加载 ImageNet 预训练权重
+            pretrained_path: 本地 ViT-B/16 权重路径；提供后不联网下载
         """
         super().__init__()
 
         # 加载 ViT-B16
-        vit = timm.create_model('vit_base_patch16_224', pretrained=pretrained)
+        local_pretrained = bool(pretrained_path)
+        vit = timm.create_model('vit_base_patch16_224', pretrained=pretrained and not local_pretrained)
+        if local_pretrained:
+            self._load_local_pretrained(vit, Path(pretrained_path))
         vit.head = nn.Identity()      # 移除分类头
         vit.pre_logits = nn.Identity() if hasattr(vit, 'pre_logits') else nn.Identity()
 
@@ -132,6 +136,34 @@ class VisualEncoder(nn.Module):
         total   = sum(p.numel() for p in self.parameters())
         trainable = sum(p.numel() for p in self.parameters() if p.requires_grad)
         print(f"[VisualEncoder] 总参数: {total/1e6:.2f}M | 可训练: {trainable/1e6:.2f}M")
+
+    def _load_local_pretrained(self, vit: nn.Module, path: Path) -> None:
+        if not path.exists():
+            raise FileNotFoundError(f"local ViT pretrained weights not found: {path}")
+        if path.suffix == ".safetensors":
+            from safetensors.torch import load_file
+            state = load_file(str(path))
+        else:
+            state = torch.load(path, map_location="cpu", weights_only=False)
+        if isinstance(state, dict):
+            for key in ("model", "state_dict", "model_state", "model_state_dict"):
+                if key in state and isinstance(state[key], dict):
+                    state = state[key]
+                    break
+        if not isinstance(state, dict):
+            raise TypeError(f"unsupported pretrained checkpoint format: {path}")
+        cleaned = {}
+        for key, value in state.items():
+            new_key = key
+            for prefix in ("module.", "model.", "visual."):
+                if new_key.startswith(prefix):
+                    new_key = new_key[len(prefix):]
+            cleaned[new_key] = value
+        incompatible = vit.load_state_dict(cleaned, strict=False)
+        print(
+            f"[VisualEncoder] Loaded local pretrained weights: {path} "
+            f"(missing={len(incompatible.missing_keys)}, unexpected={len(incompatible.unexpected_keys)})"
+        )
 
     def encode_single_frame(self, x: torch.Tensor) -> torch.Tensor:
         """

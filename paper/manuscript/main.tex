@@ -1,0 +1,66 @@
+\documentclass[preprint,12pt,authoryear]{elsarticle}
+
+% Math
+\usepackage{amsmath,amssymb,amsfonts,mathtools}
+
+% Typography and figures
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{graphicx}
+\graphicspath{{figures/}}
+\usepackage{subcaption}
+\usepackage{placeins}
+\usepackage{xcolor}
+\usepackage{url}
+\usepackage{microtype}
+\usepackage{hyperref}
+\usepackage[capitalize,noabbrev]{cleveref}
+
+\journal{Computers and Electronics in Agriculture}
+
+% Commands
+\newcommand{\R}{\mathbb{R}}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator{\softmax}{softmax}
+\newcommand{\vx}{\mathbf{x}}
+\newcommand{\vr}{\mathbf{r}}
+\newcommand{\vp}{\mathbf{p}}
+\newcommand{\vh}{\mathbf{h}}
+\newcommand{\vz}{\mathbf{z}}
+\newcommand{\vl}{\mathbf{l}}
+\newcommand{\cL}{\mathcal{L}}
+\newcommand{\ours}{TIM}
+\newcommand{\task}{Agricultural Machinery Trajectory Time-Series Classification}
+
+\begin{document}
+
+\begin{frontmatter}
+
+\title{\ours{}: Trajectory-ViT-Audio Multimodal Learning for Eleven-Class \task{}}
+
+\author[caus]{Zhou Guo}
+\address[caus]{College of Information and Electrical Engineering, China Agricultural University, Beijing 100083, China}
+
+\begin{abstract}
+\input{sections/0_abstract}
+\end{abstract}
+
+\begin{keyword}
+Agricultural machinery trajectory time-series classification, multimodal learning, GNSS trajectory, visual classification, audio classification, combine harvester.
+\end{keyword}
+
+\end{frontmatter}
+
+\input{sections/1_introduction}
+\input{sections/2_related_work}
+\input{sections/3_method}
+\input{sections/4_experiments}
+\input{sections/5_discussion}
+\input{sections/5_conclusion}
+
+\bibliographystyle{elsarticle-harv}
+\bibliography{references}
+
+\end{document}

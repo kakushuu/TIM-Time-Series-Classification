@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Emit parseable metrics from an Agri-MBT image-only summary.json."""
+"""Emit parseable metrics from an Agri-MBT ablation summary.json."""
 
 from __future__ import annotations
 
@@ -12,7 +12,7 @@ from statistics import mean
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--summary", required=True, help="Path to summary.json from an image-only run")
+    parser.add_argument("--summary", required=True, help="Path to summary.json from an ablation run")
     parser.add_argument("--per-class", default="", help="Optional path to per_class_metrics.csv")
     parser.add_argument("--json", action="store_true", help="Emit one JSON object instead of METRIC lines")
     return parser.parse_args()
@@ -69,9 +69,6 @@ def main() -> None:
     with summary_path.open("r", encoding="utf-8") as f:
         summary = json.load(f)
 
-    if summary.get("mode") != "image_only":
-        raise SystemExit(f"Expected image_only summary, got mode={summary.get('mode')!r}")
-
     history = summary.get("history", [])
     final = history[-1] if history else {"train": {}, "val": {}}
     final_train = final.get("train", {})
@@ -79,6 +76,7 @@ def main() -> None:
     test = summary.get("test", {})
 
     metrics = {
+        "mode": summary.get("mode", "unknown"),
         "best_val_macro_f1": float(summary.get("best_val_macro_f1", 0.0)),
         "final_train_macro_f1": float(final_train.get("macro_f1", 0.0)),
         "final_val_macro_f1": float(final_val.get("macro_f1", 0.0)),
@@ -97,7 +95,10 @@ def main() -> None:
         return
 
     for name, value in metrics.items():
-        print(f"METRIC {name}={value:.10f}")
+        if isinstance(value, str):
+            print(f"METRIC {name}={value}")
+        else:
+            print(f"METRIC {name}={value:.10f}")
 
 
 if __name__ == "__main__":
