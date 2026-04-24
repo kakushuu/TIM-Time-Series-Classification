@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import argparse
 import os
 from pathlib import Path
 
@@ -118,7 +119,11 @@ def draw_pipeline(ax):
 
 
 def main() -> None:
-    output = PROJECT_ROOT / "paper/manuscript/figures/fig_method_data_processing.png"
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--output", default="assets/fig_method_data_processing.png")
+    args = parser.parse_args()
+
+    output = PROJECT_ROOT / args.output
     output.parent.mkdir(parents=True, exist_ok=True)
     fig, ax = plt.subplots(figsize=(13.6, 8.0), dpi=220)
     draw_pipeline(ax)

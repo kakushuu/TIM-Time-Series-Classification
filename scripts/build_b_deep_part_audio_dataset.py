@@ -23,7 +23,7 @@ import pandas as pd
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_INPUT_DIR = PROJECT_ROOT / "data" / "b_deep_part_full_20241018_29"
-DEFAULT_VIDEO_ROOT = Path("/private/data/video")
+DEFAULT_VIDEO_ROOT = PROJECT_ROOT / "data" / "video"
 DEFAULT_OUTPUT_DIR = PROJECT_ROOT / "data" / "b_deep_part_audio_1s_20241018_29"
 
 

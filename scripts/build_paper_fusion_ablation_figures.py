@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import argparse
 import json
 import os
 from pathlib import Path
@@ -14,20 +15,15 @@ import pandas as pd
 os.environ.setdefault("MPLCONFIGDIR", "/tmp/matplotlib-agri-mbt")
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-FIGURE_DIR = PROJECT_ROOT / "paper" / "manuscript" / "figures"
+FIGURE_DIR = PROJECT_ROOT / "assets"
 
 CLASS_SHORT = ["R-EH", "S-EH", "T-EH", "Full", "R-Tr", "S-Tr", "T-Tr", "Off", "Idle", "Unload", "Road"]
 MODEL_DIRS = {
-    "AST": PROJECT_ROOT / "experiments" / "paper_4090_final_seed44" / "ast" / "seed44",
-    "ViT": PROJECT_ROOT / "experiments" / "paper_4090_final_seed44" / "image_best" / "seed44",
-    "BiLSTM": PROJECT_ROOT / "experiments" / "paper_4090_final_seed44" / "trnet" / "seed44",
-    "TIM concat": PROJECT_ROOT / "experiments" / "paper_4090_final_seed44" / "trimodal_concat" / "seed44",
-    "TIM class-gate": PROJECT_ROOT
-    / "experiments"
-    / "trimodal_fusion_4090"
-    / "fusion_class_gate_20260420"
-    / "trimodal_class_gate"
-    / "seed44",
+    "AST": PROJECT_ROOT / "artifacts" / "paper_results" / "ast",
+    "ViT": PROJECT_ROOT / "artifacts" / "paper_results" / "image_best",
+    "BiLSTM": PROJECT_ROOT / "artifacts" / "paper_results" / "trnet",
+    "TIM concat": PROJECT_ROOT / "artifacts" / "paper_results" / "trimodal_concat",
+    "TIM class-gate": PROJECT_ROOT / "artifacts" / "paper_results" / "trimodal_class_gate",
 }
 MODEL_ORDER = ["AST", "ViT", "BiLSTM", "TIM concat", "TIM class-gate"]
 MODEL_COLORS = {
@@ -89,21 +85,6 @@ def load_per_class() -> pd.DataFrame:
 def load_confusion(model: str) -> np.ndarray:
     summary = json.loads((MODEL_DIRS[model] / "summary.json").read_text())
     return np.asarray(summary["test"]["confusion_matrix"], dtype=int)
-
-
-def load_part_accuracy() -> pd.DataFrame:
-    paths = {
-        "TIM concat": MODEL_DIRS["TIM concat"] / "part_diagnostics" / "part_diagnostic_summary.csv",
-        "TIM class-gate": MODEL_DIRS["TIM class-gate"] / "part_diagnostics" / "part_diagnostic_summary.csv",
-    }
-    frames = []
-    for model, path in paths.items():
-        df = pd.read_csv(path, encoding="utf-8-sig")
-        df["model"] = model
-        df["trajectory"] = [f"Trajectory {idx}" for idx in range(1, len(df) + 1)]
-        df["acc_pct"] = df["acc"] * 100.0
-        frames.append(df[["trajectory", "model", "acc_pct"]])
-    return pd.concat(frames, ignore_index=True)
 
 
 def save_overall_results(summary: pd.DataFrame, output: Path) -> None:
@@ -200,7 +181,7 @@ def save_fusion_ablation(summary: pd.DataFrame, per_class: pd.DataFrame, output:
     import matplotlib.pyplot as plt
     import seaborn as sns
 
-    fig, axes = plt.subplots(2, 2, figsize=(10.2, 7.7))
+    fig, axes = plt.subplots(2, 2, figsize=(10.2, 7.2))
     axes = axes.ravel()
 
     # Aggregate metric ablation.
@@ -265,26 +246,28 @@ def save_fusion_ablation(summary: pd.DataFrame, per_class: pd.DataFrame, output:
     for container in axes[2].containers:
         axes[2].bar_label(container, fmt="%.0f", padding=3, fontsize=8)
 
-    # Part-level selected diagnostics.
-    part = load_part_accuracy()
-    part["Fusion"] = part["model"].map({"TIM concat": "Concat", "TIM class-gate": "Class-gate"})
+    # Validation/test comparison for the two trimodal variants.
+    fusion_rows = summary[summary["model"].isin(["TIM concat", "TIM class-gate"])].copy()
+    fusion_rows["Fusion"] = fusion_rows["model"].map({"TIM concat": "Concat", "TIM class-gate": "Class-gate"})
+    comparison = fusion_rows.melt(
+        id_vars="Fusion",
+        value_vars=["Val macro-F1", "Macro-F1", "Weighted-F1"],
+        var_name="Metric",
+        value_name="Score",
+    )
     sns.barplot(
-        data=part,
-        x="trajectory",
-        y="acc_pct",
+        data=comparison,
+        x="Metric",
+        y="Score",
         hue="Fusion",
         hue_order=["Concat", "Class-gate"],
         palette=[MODEL_COLORS["TIM concat"], MODEL_COLORS["TIM class-gate"]],
         ax=axes[3],
     )
-    axes[3].set_title("Selected trajectory diagnostics")
+    axes[3].set_title("Trimodal validation and test metrics")
     axes[3].set_xlabel("")
-    axes[3].set_ylabel("Accuracy (%)")
-    axes[3].set_ylim(74, 85)
-    axes[3].legend_.remove()
-    for tick in axes[3].get_xticklabels():
-        tick.set_rotation(20)
-        tick.set_ha("right")
+    axes[3].set_ylabel("Score (%)")
+    axes[3].legend(title="", loc="lower right")
     for container in axes[3].containers:
         axes[3].bar_label(container, fmt="%.1f", padding=2, fontsize=8)
 
@@ -294,14 +277,21 @@ def save_fusion_ablation(summary: pd.DataFrame, per_class: pd.DataFrame, output:
 
 
 def main() -> None:
-    FIGURE_DIR.mkdir(parents=True, exist_ok=True)
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--output-dir", default=str(FIGURE_DIR))
+    args = parser.parse_args()
+
+    output_dir = Path(args.output_dir)
+    if not output_dir.is_absolute():
+        output_dir = PROJECT_ROOT / output_dir
+    output_dir.mkdir(parents=True, exist_ok=True)
     apply_style()
     summary = load_summary()
     per_class = load_per_class()
-    save_overall_results(summary, FIGURE_DIR / "fig_overall_results.png")
-    save_modality_roles(per_class, FIGURE_DIR / "fig_modality_roles.png")
-    save_fusion_ablation(summary, per_class, FIGURE_DIR / "fig_fusion_ablation.png")
-    print(f"Saved fusion figures to {FIGURE_DIR}")
+    save_overall_results(summary, output_dir / "fig_overall_results.png")
+    save_modality_roles(per_class, output_dir / "fig_modality_roles.png")
+    save_fusion_ablation(summary, per_class, output_dir / "fig_fusion_ablation.png")
+    print(f"Saved fusion figures to {output_dir}")
 
 
 if __name__ == "__main__":

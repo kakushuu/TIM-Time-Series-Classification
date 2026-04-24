@@ -3,8 +3,8 @@
 
 The OCR frames have already been aligned in data/b_ocr_dataset. This script
 does not rerun OCR. It filters the existing per-date aligned_data.csv files by
-timestamps present in /private/data/B_deep_part/*.xlsx and writes chronological
-date-wise splits plus an all.csv file containing every selected split row.
+timestamps present in data/B_deep_part/*.xlsx and writes chronological date-wise
+splits plus an all.csv file containing every selected split row.
 """
 
 from __future__ import annotations
@@ -18,7 +18,7 @@ import pandas as pd
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-DEFAULT_PART_DIR = Path("/private/data/B_deep_part")
+DEFAULT_PART_DIR = PROJECT_ROOT / "data" / "B_deep_part"
 DEFAULT_OCR_ROOT = PROJECT_ROOT / "data" / "b_ocr_dataset"
 DEFAULT_OUTPUT_DIR = PROJECT_ROOT / "data" / "b_deep_part_full_20241018_29"
 
@@ -222,7 +222,7 @@ def main() -> None:
         "test": parse_dates(args.test_dates),
     }
     summary = {
-        "description": "B_deep_part timestamp-filtered OCR splits generated from all selected /private/data/B_deep_part rows covered by the configured dates.",
+        "description": "B_deep_part timestamp-filtered OCR splits generated from all selected trajectory rows covered by the configured dates.",
         "part_dir": str(part_dir),
         "ocr_root": str(ocr_root),
         "splits": {},

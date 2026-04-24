@@ -29,7 +29,7 @@ import pandas as pd
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_SOURCE_CSV = PROJECT_ROOT / "data" / "b_deep_part_audio_1s_20241018_29" / "all.csv"
-DEFAULT_PART_DIR = Path("/private/data/B_deep_part")
+DEFAULT_PART_DIR = PROJECT_ROOT / "data" / "B_deep_part"
 DEFAULT_OUTPUT_DIR = PROJECT_ROOT / "data" / "b_deep_part_multimodal_full_clean_20260417"
 
 TRAIN_DATES = ["2024-10-18", "2024-10-19", "2024-10-20", "2024-10-22", "2024-10-23", "2024-10-24", "2024-10-25"]

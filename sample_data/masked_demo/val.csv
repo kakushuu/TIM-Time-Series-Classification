@@ -1,0 +1,7 @@
+﻿frame_path,audio_path,frame_time,video_file,second_in_video,分类,经度,纬度,速度,深度,方向角
+sample_data/masked_demo/frames/val/demo_val_video_0000.ppm,sample_data/masked_demo/audio/val/demo_val_video_0000.wav,2024-10-27 09:30:00,demo_val_video.mp4,0,8,120.016,35.008,1.6,0.56,136.0
+sample_data/masked_demo/frames/val/demo_val_video_0001.ppm,sample_data/masked_demo/audio/val/demo_val_video_0001.wav,2024-10-27 09:30:01,demo_val_video.mp4,1,8,120.0168,35.0085,1.75,0.59,147.0
+sample_data/masked_demo/frames/val/demo_val_video_0002.ppm,sample_data/masked_demo/audio/val/demo_val_video_0002.wav,2024-10-27 09:30:02,demo_val_video.mp4,2,8,120.0176,35.009,1.9,0.62,158.0
+sample_data/masked_demo/frames/val/demo_val_video_0003.ppm,sample_data/masked_demo/audio/val/demo_val_video_0003.wav,2024-10-27 09:30:03,demo_val_video.mp4,3,8,120.0184,35.0095,2.05,0.65,169.0
+sample_data/masked_demo/frames/val/demo_val_video_0004.ppm,sample_data/masked_demo/audio/val/demo_val_video_0004.wav,2024-10-27 09:30:04,demo_val_video.mp4,4,8,120.0192,35.01,2.2,0.68,180.0
+sample_data/masked_demo/frames/val/demo_val_video_0005.ppm,sample_data/masked_demo/audio/val/demo_val_video_0005.wav,2024-10-27 09:30:05,demo_val_video.mp4,5,8,120.02,35.0105,2.35,0.71,191.0

@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+title: "TIM: Trajectory-ViT-Audio Multimodal Learning for Eleven-Class Agricultural Machinery Trajectory Time-Series Classification"
+message: "If you use this repository, please cite the TIM paper."
+type: software
+authors:
+  - family-names: Guo
+    given-names: Zhou
+repository-code: "https://github.com/kakushuu/TIM-Time-Series-Classification"
+license: MIT
+date-released: 2026-04-24

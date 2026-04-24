@@ -1,0 +1,7 @@
+﻿frame_path,audio_path,frame_time,video_file,second_in_video,分类,经度,纬度,速度,深度,方向角
+sample_data/masked_demo/frames/test/demo_test_video_0000.ppm,sample_data/masked_demo/audio/test/demo_test_video_0000.wav,2024-10-29 11:15:00,demo_test_video.mp4,0,10,120.02,35.01,1.7,0.6,170.0
+sample_data/masked_demo/frames/test/demo_test_video_0001.ppm,sample_data/masked_demo/audio/test/demo_test_video_0001.wav,2024-10-29 11:15:01,demo_test_video.mp4,1,10,120.0208,35.0105,1.85,0.63,181.0
+sample_data/masked_demo/frames/test/demo_test_video_0002.ppm,sample_data/masked_demo/audio/test/demo_test_video_0002.wav,2024-10-29 11:15:02,demo_test_video.mp4,2,10,120.0216,35.011,2.0,0.66,192.0
+sample_data/masked_demo/frames/test/demo_test_video_0003.ppm,sample_data/masked_demo/audio/test/demo_test_video_0003.wav,2024-10-29 11:15:03,demo_test_video.mp4,3,10,120.0224,35.0115,2.15,0.69,203.0
+sample_data/masked_demo/frames/test/demo_test_video_0004.ppm,sample_data/masked_demo/audio/test/demo_test_video_0004.wav,2024-10-29 11:15:04,demo_test_video.mp4,4,10,120.0232,35.012,2.3,0.72,214.0
+sample_data/masked_demo/frames/test/demo_test_video_0005.ppm,sample_data/masked_demo/audio/test/demo_test_video_0005.wav,2024-10-29 11:15:05,demo_test_video.mp4,5,10,120.024,35.0125,2.45,0.75,225.0

@@ -1,8 +1,0 @@
-\section{Conclusion}
-\label{sec:conclusion}
-
-This paper presents TIM, a trajectory-image-audio multimodal model for eleven-class \task{}. The study is built on a synchronized real-world combine-harvester dataset and a matched causal temporal protocol: 128-second trajectory context, nine nearest causal ViT frames, AST-based audio spectrogram encoding, and class-adaptive logit-level trimodal fusion.
-
-The completed BiLSTM sequence-length ablation shows that 128 seconds is the best trajectory context among 64, 128, 256, and 512 seconds, reaching a mean macro-F1 of 54.64\% across four seeds. Direct trimodal concatenation demonstrates the value of synchronized multimodal sensing, improving macro-F1 by 6.56 percentage points over the strongest unimodal baseline. The proposed class-adaptive gate further improves the fixed-seed trimodal result to 81.36\% accuracy, 63.64\% macro-F1, and 81.01\% weighted-F1.
-
-The fusion ablation shows why the current model replaces conventional concatenation with class-adaptive fusion. The gate improves turning transfer, reverse transfer, idling waiting, and turning empty harvesting, and it substantially reduces the largest waiting-state confusion. The remaining errors are concentrated in unloading, road driving, and fine-grained transfer substates. Future work should therefore combine class-adaptive fusion with transition-aware temporal modeling, imbalance-aware objectives, and gate constraints for rare or strongly audio-dominant classes.

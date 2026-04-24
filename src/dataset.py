@@ -321,7 +321,7 @@ class AgriMultimodalDataset(Dataset):
 
     def _save_class_weights(self):
         """计算并保存类别权重（用于训练时缓解类别不平衡）"""
-        weights_path = PROJECT_ROOT / 'data' / 'class_weights.json'
+        weights_path = self.gnss_stats_path.parent / 'class_weights.json'
         if weights_path.exists():
             return
 

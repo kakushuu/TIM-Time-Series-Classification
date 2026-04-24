@@ -1,0 +1,8 @@
+{
+  "description": "Synthetic masked demo data for repository smoke tests and examples.",
+  "splits": {
+    "train": 8,
+    "val": 6,
+    "test": 6
+  }
+}
