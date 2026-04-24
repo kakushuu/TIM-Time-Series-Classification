@@ -14,6 +14,26 @@ Agricultural machinery trajectory time-series classification is challenging beca
 
 TIM 是一个面向农机作业时序分类的多模态框架，统一利用 GNSS 轨迹、视频帧和音频片段进行 11 类作业状态识别。这个开源分支只保留论文复现需要的核心训练代码、轻量结果摘要、少量可公开权重，以及一个极小的 masked demo 数据集，避免把私有原始数据、超大实验目录和工作站专用脚本一起公开出去。
 
+## Figures
+
+### Experiment And Data Pipeline
+
+This figure summarizes the released data alignment and causal sampling setup used by the paper code.
+
+<img src="assets/fig_method_data_processing.png" alt="TIM experiment and data pipeline" width="980">
+
+### Model Structure
+
+The public release keeps the unified multimodal training entrypoint, while the trimodal paper model follows the structure below.
+
+<img src="assets/fig_model_structure.png" alt="TIM model structure overview" width="900">
+
+### Released Comparison Snapshot
+
+The released repository also includes the final aggregate comparison figure used for the paper-scale summary.
+
+<img src="assets/fig_overall_results.png" alt="TIM overall comparison results" width="980">
+
 ## What is included
 
 - `src/`: core dataset and training code for trajectory-only, image-only, audio-only, multimodal, and trimodal ablations
