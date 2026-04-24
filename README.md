@@ -16,23 +16,47 @@ TIM 是一个面向农机作业时序分类的多模态框架，统一利用 GNS
 
 ## Figures
 
-### Experiment And Data Pipeline
+### Sensing Platform
 
-This figure summarizes the released data alignment and causal sampling setup used by the paper code.
+The field platform combines machine-mounted cameras, the onboard controller interface, and auxiliary status sensors for synchronized multimodal collection.
 
-<img src="assets/fig_method_data_processing.png" alt="TIM experiment and data pipeline" width="980">
+<img src="assets/fig_equipment.png" alt="TIM sensing platform and mounted equipment" width="760">
 
-### Model Structure
+### TIM Overview
 
-The public release keeps the unified multimodal training entrypoint, while the trimodal paper model follows the structure below.
+This overview figure summarizes the released paper pipeline: raw GNSS, image, and audio inputs are aligned at the same anchor time, encoded with modality-specific branches, and fused by class-adaptive routing.
 
-<img src="assets/fig_model_structure.png" alt="TIM model structure overview" width="900">
+<img src="assets/fig_tim_overview.png" alt="TIM time-anchored multimodal overview" width="980">
 
-### Released Comparison Snapshot
+### Dataset Distribution
 
-The released repository also includes the final aggregate comparison figure used for the paper-scale summary.
+The benchmark is long-tailed across the eleven operation classes. The plot below shows the released train, validation, and test split composition.
 
-<img src="assets/fig_overall_results.png" alt="TIM overall comparison results" width="980">
+<img src="assets/fig_dataset_distribution.png" alt="TIM dataset distribution across eleven classes" width="900">
+
+### Temporal Prediction Timeline
+
+Representative trajectory timelines compare true labels, TIM class-gate predictions, and error intervals over long field operation sequences.
+
+<img src="assets/fig_part_true_pred_timeline.png" alt="TIM true and predicted class timelines" width="980">
+
+### Spatial Prediction Map
+
+This case-study figure projects group-level accuracy and fine-class residuals back onto real field trajectories.
+
+<img src="assets/fig_part_spatial_errors.png" alt="TIM spatial prediction map with group accuracy and fine-class residuals" width="980">
+
+### Cross-Model Error Heatmaps
+
+The heatmaps compare where unimodal baselines and fusion variants fail on the same trajectory segment.
+
+<img src="assets/fig_part_misclassification_heatmaps.png" alt="TIM misclassification heatmaps across modalities and fusion models" width="980">
+
+### Spatial Error Comparison
+
+This visualization highlights the error hotspots rescued by class-gate fusion relative to unimodal models and simple concatenation.
+
+<img src="assets/fig_part_error_hotspots.png" alt="TIM spatial error comparison across modalities and class-gate fusion" width="980">
 
 ## What is included
 
