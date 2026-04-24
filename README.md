@@ -6,6 +6,14 @@ Reference implementation and lightweight release package for the TIM paper:
 
 This branch is a curated paper-release version of the original research repo. It keeps the core training code, the paper result summaries, two lightweight trajectory checkpoints, and a tiny masked demo dataset. Large internal experiment folders, private data paths, logs, and machine-specific launcher scripts have been removed.
 
+## Abstract
+
+Agricultural machinery trajectory time-series classification is challenging because field operations are long-tailed, visually ambiguous, and often require coordinated temporal evidence from GNSS trajectories, video frames, and audio cues. TIM is a multimodal classification framework that aligns causal trajectory windows, sparse image observations, and short audio segments at the same supervision anchor, then fuses them with trajectory-aware multimodal modeling. The released code supports trajectory-only, image-only, audio-only, bimodal, and trimodal ablations under a unified training entrypoint. In the released paper summaries, TIM outperforms the strongest released single-modality baselines and improves over simple trimodal concatenation, reaching 81.36% accuracy and 63.64 macro-F1 on the eleven-class benchmark.
+
+## 中文简介
+
+TIM 是一个面向农机作业时序分类的多模态框架，统一利用 GNSS 轨迹、视频帧和音频片段进行 11 类作业状态识别。这个开源分支只保留论文复现需要的核心训练代码、轻量结果摘要、少量可公开权重，以及一个极小的 masked demo 数据集，避免把私有原始数据、超大实验目录和工作站专用脚本一起公开出去。
+
 ## What is included
 
 - `src/`: core dataset and training code for trajectory-only, image-only, audio-only, multimodal, and trimodal ablations
@@ -34,7 +42,7 @@ pip install -r requirements.txt
 Smoke-test the dataset loader with the masked demo data:
 
 ```bash
-pytest tests/test_release_smoke.py
+python -m pytest tests/test_release_smoke.py
 ```
 
 Run a tiny trajectory-only example on the demo data:
@@ -100,6 +108,11 @@ The repository includes the final released summaries used for the paper-scale co
 
 The raw released summaries are under [artifacts/paper_results](artifacts/paper_results).
 
+中文说明：
+- `BiLSTM / TRNet-seq` 是公开版中附带轻量 checkpoint 的轨迹基线。
+- `TIM concat` 表示直接拼接式 trimodal 融合。
+- `TIM class-gate` 表示论文中的类别自适应融合版本，也是当前公开结果里表现最好的模型。
+
 ## Released checkpoints
 
 The `checkpoints/` folder intentionally contains only small trajectory checkpoints that fit normal GitHub hosting:
@@ -143,7 +156,17 @@ More detail: [scripts/README.md](scripts/README.md)
 
 ## Citation
 
-If you use this repository, cite the paper metadata in [CITATION.cff](CITATION.cff).
+If you use this repository, cite the metadata in [CITATION.cff](CITATION.cff). A ready-to-copy `BibTeX` entry is below.
+
+```bibtex
+@misc{guo2026tim,
+  title        = {TIM: Trajectory-ViT-Audio Multimodal Learning for Eleven-Class Agricultural Machinery Trajectory Time-Series Classification},
+  author       = {Guo, Zhou},
+  year         = {2026},
+  howpublished = {\url{https://github.com/kakushuu/TIM-Time-Series-Classification}},
+  note         = {Code release and paper companion repository}
+}
+```
 
 ## License
 
