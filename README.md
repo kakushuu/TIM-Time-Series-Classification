@@ -42,21 +42,9 @@ Representative trajectory timelines compare true labels, TIM class-gate predicti
 
 ### Spatial Prediction Map
 
-This case-study figure projects group-level accuracy and fine-class residuals back onto real field trajectories.
+This case-study figure compares ground truth, single-modality baselines, TIM-Concat, and TIM-ClassGate predictions on four complete held-out field trajectories.
 
-<img src="assets/fig_part_spatial_errors.png" alt="TIM spatial prediction map with group accuracy and fine-class residuals" width="980">
-
-### Cross-Model Error Heatmaps
-
-The heatmaps compare where unimodal baselines and fusion variants fail on the same trajectory segment.
-
-<img src="assets/fig_part_misclassification_heatmaps.png" alt="TIM misclassification heatmaps across modalities and fusion models" width="980">
-
-### Spatial Error Comparison
-
-This visualization highlights the error hotspots rescued by class-gate fusion relative to unimodal models and simple concatenation.
-
-<img src="assets/fig_part_error_hotspots.png" alt="TIM spatial error comparison across modalities and class-gate fusion" width="980">
+<img src="assets/fig_part_spatial_errors.png" alt="TIM spatial prediction comparison across trajectories and models" width="980">
 
 ## What is included
 
